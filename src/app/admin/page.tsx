@@ -80,14 +80,8 @@ export default function AdminDashboard() {
         return null;
     }
 
-    const getRole = (email: string | null | undefined) => {
-        if (!email) return "Staff";
-        if (email === "admin@smartavenue99.com") return "Admin";
-        // Future: Check for manager emails or role field in DB
-        return "Staff";
-    };
-
-    const role = getRole(user?.email);
+    // Role is now derived from AuthContext
+    const dashboardTitle = `${role} Dashboard`;
     const dashboardTitle = `${role} Dashboard`;
 
     return (
