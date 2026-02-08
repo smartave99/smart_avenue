@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingBag, Search, User } from "lucide-react";
+import { Menu, X, ShoppingBag, Search } from "lucide-react";
 import { NAV_LINKS } from "@/lib/data";
 
 export default function Header() {
@@ -43,10 +43,10 @@ export default function Header() {
                             key={link.href}
                             href={link.href}
                             className={`text-sm font-medium transition-colors hover:text-brand-gold relative group ${pathname === link.href
-                                    ? "text-brand-gold"
-                                    : isScrolled
-                                        ? "text-gray-700"
-                                        : "text-gray-100"
+                                ? "text-brand-gold"
+                                : isScrolled
+                                    ? "text-gray-700"
+                                    : "text-gray-100"
                                 }`}
                         >
                             {link.label}
@@ -60,9 +60,7 @@ export default function Header() {
                     <button className={`p-2 rounded-full transition-colors ${isScrolled ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}>
                         <Search className="w-5 h-5" />
                     </button>
-                    <button className={`p-2 rounded-full transition-colors ${isScrolled ? 'text-gray-600 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}>
-                        <User className="w-5 h-5" />
-                    </button>
+
                     <button className="flex items-center gap-2 bg-brand-gold hover:bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-lg shadow-yellow-500/20">
                         <ShoppingBag className="w-4 h-4" />
                         <span className="hidden lg:inline">Shop Now</span>
@@ -103,9 +101,7 @@ export default function Header() {
                             </Link>
                         ))}
                         <div className="flex gap-4 mt-2 pt-4 border-t border-gray-100">
-                            <button className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border border-gray-200">
-                                <User className="w-5 h-5" /> Account
-                            </button>
+
                             <button className="flex-1 flex items-center justify-center gap-2 p-3 rounded-lg bg-brand-green text-white">
                                 <ShoppingBag className="w-5 h-5" /> Shop
                             </button>
