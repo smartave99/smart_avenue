@@ -90,7 +90,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-slate-50 text-slate-900 flex flex-col min-h-screen`}
       >
-        {children}
+        <Header />
+        <main className="flex-grow pt-20">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
