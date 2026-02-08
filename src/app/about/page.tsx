@@ -15,7 +15,7 @@ export default function AboutPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-6xl font-serif font-bold mb-6"
                     >
-                        Smart Avnue – <span className="text-brand-gold">Premium & Affordable</span>
+                        Smart Avnue – <span className="text-brand-gold">All your home needs, simplified.</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -23,7 +23,7 @@ export default function AboutPage() {
                         transition={{ delay: 0.2 }}
                         className="text-xl text-gray-300 max-w-3xl mx-auto"
                     >
-                        Making everyday essentials look better, feel better, and last longer. Quality and elegance within everyone’s reach.
+                        Bringing comfort, convenience, and elegance to everyday living with a wide range of home essentials and curated gift items.
                     </motion.p>
                 </div>
             </section>
