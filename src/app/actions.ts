@@ -1,7 +1,6 @@
 "use server";
 
-import { adminDb } from "@/lib/firebase-admin";
-import * as admin from "firebase-admin";
+import { getAdminDb, admin } from "@/lib/firebase-admin";
 
 // ==================== OFFERS ====================
 
@@ -15,7 +14,7 @@ export interface Offer {
 
 export async function createOffer(title: string, discount: string, description: string) {
     try {
-        const docRef = await adminDb.collection("offers").add({
+        const docRef = await getAdminDb().collection("offers").add({
             title,
             discount,
             description,
@@ -29,7 +28,7 @@ export async function createOffer(title: string, discount: string, description: 
 
 export async function getOffers(): Promise<Offer[]> {
     try {
-        const snapshot = await adminDb.collection("offers").orderBy("createdAt", "desc").get();
+        const snapshot = await getAdminDb().collection("offers").orderBy("createdAt", "desc").get();
         return snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => ({
             id: doc.id,
             ...doc.data(),
@@ -43,7 +42,7 @@ export async function getOffers(): Promise<Offer[]> {
 
 export async function deleteOffer(id: string) {
     try {
-        await adminDb.collection("offers").doc(id).delete();
+        await getAdminDb().collection("offers").doc(id).delete();
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
@@ -61,7 +60,7 @@ export interface GalleryImage {
 
 export async function addGalleryImage(imageUrl: string, storagePath: string) {
     try {
-        const docRef = await adminDb.collection("gallery").add({
+        const docRef = await getAdminDb().collection("gallery").add({
             imageUrl,
             storagePath,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -74,7 +73,7 @@ export async function addGalleryImage(imageUrl: string, storagePath: string) {
 
 export async function getGalleryImages(): Promise<GalleryImage[]> {
     try {
-        const snapshot = await adminDb.collection("gallery").orderBy("createdAt", "desc").get();
+        const snapshot = await getAdminDb().collection("gallery").orderBy("createdAt", "desc").get();
         return snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => ({
             id: doc.id,
             ...doc.data(),
@@ -88,7 +87,7 @@ export async function getGalleryImages(): Promise<GalleryImage[]> {
 
 export async function deleteGalleryImage(id: string) {
     try {
-        await adminDb.collection("gallery").doc(id).delete();
+        await getAdminDb().collection("gallery").doc(id).delete();
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
@@ -99,7 +98,7 @@ export async function deleteGalleryImage(id: string) {
 
 export async function testFirebaseConnection() {
     try {
-        const snapshot = await adminDb.listCollections();
+        const snapshot = await getAdminDb().listCollections();
         console.log("Successfully connected to Firebase!");
         return {
             success: true,

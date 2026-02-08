@@ -17,11 +17,11 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL("https://smartavnue.com"),
   title: {
-    default: "Smart Avnue – Premium Products at Affordable Prices",
+    default: "Smart Avnue – All your home needs, simplified.",
     template: "%s | Smart Avnue",
   },
   description:
-    "Smart Avnue is your one-stop retail destination for premium, stylish, and affordable everyday products designed to elevate your lifestyle. Shop stationery, soft toys, kitchen décor, and more.",
+    "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
   keywords: [
     "Smart Avnue retail store",
     "premium stationery store",
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://smartavnue.com",
-    title: "Smart Avnue – Premium Products at Affordable Prices",
+    title: "Smart Avnue – All your home needs, simplified.",
     description:
-      "Smart Avnue is your one-stop retail destination for premium, stylish, and affordable everyday products designed to elevate your lifestyle.",
+      "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
     siteName: "Smart Avnue",
     images: [
       {
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Smart Avnue – Premium Products at Affordable Prices",
+    title: "Smart Avnue – All your home needs, simplified.",
     description:
-      "Smart Avnue is your one-stop retail destination for premium, stylish, and affordable everyday products designed to elevate your lifestyle.",
+      "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
     images: ["/og-image.jpg"],
     creator: "@smartavnue", // Placeholder handle
   },
@@ -80,22 +80,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { headers } from "next/headers";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isAdminRoute = pathname.startsWith("/admin");
+
   return (
     <html lang="en">
       <body
         className={`${inter.variable} ${playfair.variable} antialiased bg-slate-50 text-slate-900 flex flex-col min-h-screen`}
       >
-        <Header />
-        <main className="flex-grow pt-20">
+        {!isAdminRoute && <Header />}
+        <main className={isAdminRoute ? "" : "flex-grow pt-20"}>
           {children}
         </main>
-        <Footer />
+        {!isAdminRoute && <Footer />}
       </body>
     </html>
   );
 }
+
