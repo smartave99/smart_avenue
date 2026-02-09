@@ -64,7 +64,7 @@ export default async function DebugPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {staff.map((user: any) => (
+                        {staff.map((user: { id: string; email?: string; role?: string }) => (
                             <tr key={user.id}>
                                 <td className="px-6 py-4">{user.email}</td>
                                 <td className="px-6 py-4 capitalize">
