@@ -148,7 +148,13 @@ export async function getSiteContent<T>(section: string): Promise<T | null> {
     try {
         const doc = await getAdminDb().collection("siteContent").doc(section).get();
         if (doc.exists) {
-            return doc.data() as T;
+            const data = doc.data();
+            // detailed generic serialization for common timestamp fields
+            return {
+                ...data,
+                createdAt: (data?.createdAt as admin.firestore.Timestamp)?.toDate() || undefined,
+                updatedAt: (data?.updatedAt as admin.firestore.Timestamp)?.toDate() || undefined,
+            } as T;
         }
         return null;
     } catch (error) {
