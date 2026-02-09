@@ -10,8 +10,8 @@ import {
     Upload,
     Trash2,
     Image as ImageIcon,
-
 } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 import Link from "next/link";
 
 export default function GalleryEditor() {
@@ -20,7 +20,7 @@ export default function GalleryEditor() {
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
-    const [imageUrl, setImageUrl] = useState("");
+
     const [showUpload, setShowUpload] = useState(false);
 
     useEffect(() => {
@@ -42,18 +42,22 @@ export default function GalleryEditor() {
         setLoading(false);
     };
 
-    const handleAddImage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!imageUrl.trim()) return;
+    const handleUpload = async (files: { url: string; path: string }[]) => {
+        if (files.length === 0) return;
 
         setUploading(true);
-        const result = await addGalleryImage(imageUrl, `manual/${Date.now()}`);
-        if (result.success) {
-            setImageUrl("");
-            setShowUpload(false);
+        try {
+            for (const file of files) {
+                await addGalleryImage(file.url, file.path);
+            }
             await loadImages();
+            setShowUpload(false);
+        } catch (error) {
+            console.error("Error adding gallery images:", error);
+            alert("Failed to add images");
+        } finally {
+            setUploading(false);
         }
-        setUploading(false);
     };
 
     const handleDeleteImage = async (id: string) => {
@@ -95,16 +99,13 @@ export default function GalleryEditor() {
                 {/* Add image form */}
                 {showUpload && (
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-                        <h3 className="font-semibold text-gray-800 mb-4">Add Image URL</h3>
-                        <form onSubmit={handleAddImage} className="flex gap-4">
-                            <input
-                                type="url"
-                                value={imageUrl}
-                                onChange={(e) => setImageUrl(e.target.value)}
-                                placeholder="https://example.com/image.jpg"
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                                required
-                            />
+                        <h3 className="font-semibold text-gray-800 mb-4">Upload Images</h3>
+                        <ImageUpload
+                            folder="gallery"
+                            multiple
+                            onUpload={handleUpload}
+                        />
+                        <div className="mt-4 flex justify-end">
                             <button
                                 type="button"
                                 onClick={() => setShowUpload(false)}
@@ -112,18 +113,7 @@ export default function GalleryEditor() {
                             >
                                 Cancel
                             </button>
-                            <button
-                                type="submit"
-                                disabled={uploading}
-                                className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-50"
-                            >
-                                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                                Add
-                            </button>
-                        </form>
-                        <p className="text-sm text-gray-500 mt-2">
-                            Note: For file uploads, please enable Firebase Storage first. Currently supporting URL-based images.
-                        </p>
+                        </div>
                     </div>
                 )}
 

@@ -1,123 +1,90 @@
 /**
  * LLM Service
  * 
- * Wrapper for Google Gemini API with automatic key rotation and error handling.
+ * Wrapper for LLM providers (Google, OpenAI, Anthropic) with automatic key rotation and error handling.
  */
 
 import { getAPIKeyManager } from "./api-key-manager";
 import {
     LLMIntentResponse,
     LLMServiceError,
-    APIKeyExhaustedError
+    APIKeyExhaustedError,
+    LLMProvider
 } from "@/types/assistant-types";
 import { Product, Category } from "@/app/actions";
+import { getProvider } from "./llm-providers";
 
-const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const GEMINI_MODEL = "gemini-2.0-flash";
 const MAX_RETRIES = 3;
 
-interface GeminiResponse {
-    candidates?: Array<{
-        content?: {
-            parts?: Array<{
-                text?: string;
-            }>;
-        };
-    }>;
-    error?: {
-        code: number;
-        message: string;
-    };
-}
-
 /**
- * Make a request to Gemini API with automatic key rotation on failure
+ * Make a request to an LLM provider with automatic key rotation on failure
  */
-async function callGeminiAPI(prompt: string, retryCount: number = 0): Promise<string> {
+async function callLLM(prompt: string, preferredProvider: LLMProvider = "google", retryCount: number = 0): Promise<string> {
     const keyManager = getAPIKeyManager();
 
-    if (!keyManager.hasKeys()) {
-        throw new APIKeyExhaustedError("No API keys configured");
+    // In future we could fallback: const provider = keyManager.hasKeys(preferredProvider) ? preferredProvider : 'google';
+
+    // For now we assume the user checks available providers
+    const providerId = preferredProvider;
+
+    // Check if we have any keys for this provider
+    if (!keyManager.hasKeys(providerId)) {
+        // If the requested provider isn't available, check if we can fallback to Google
+        // This makes the transition smoother if user hasn't set up new keys yet
+        if (providerId !== "google" && keyManager.hasKeys("google")) {
+            console.log(`[LLMService] Provider ${providerId} has no keys, falling back to google`);
+            return callLLM(prompt, "google", retryCount);
+        }
+
+        throw new APIKeyExhaustedError(`No API keys configured for provider: ${providerId}`);
     }
 
     let apiKey: string;
     try {
-        apiKey = keyManager.getActiveKey();
+        apiKey = keyManager.getActiveKey(providerId);
     } catch (error) {
+        // If active keys are exhausted for this provider, try fallback
+        if (providerId !== "google" && keyManager.hasKeys("google")) {
+            console.log(`[LLMService] Provider ${providerId} exhausted, falling back to google`);
+            return callLLM(prompt, "google", retryCount);
+        }
         throw error;
     }
 
-    const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    const provider = getProvider(providerId);
 
     try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [{ text: prompt }],
-                    },
-                ],
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 2048,
-                },
-            }),
-        });
-
-        if (response.status === 429) {
+        const text = await provider.generateContent(prompt, apiKey);
+        keyManager.markKeySuccess(apiKey);
+        return text;
+    } catch (error) {
+        if (error instanceof LLMServiceError && error.isRateLimited) {
             // Rate limited
             keyManager.markKeyRateLimited(apiKey);
 
             if (retryCount < MAX_RETRIES) {
-                console.log(`[LLMService] Rate limited, retrying with new key (attempt ${retryCount + 1})`);
-                return callGeminiAPI(prompt, retryCount + 1);
+                console.log(`[LLMService] Rate limited (${providerId}), retrying with new key (attempt ${retryCount + 1})`);
+                return callLLM(prompt, providerId, retryCount + 1);
             }
 
-            throw new LLMServiceError("Rate limit exceeded on all available keys", 429);
-        }
-
-        if (!response.ok) {
-            keyManager.markKeyFailed(apiKey);
-
-            if (retryCount < MAX_RETRIES) {
-                console.log(`[LLMService] Request failed (${response.status}), retrying (attempt ${retryCount + 1})`);
-                return callGeminiAPI(prompt, retryCount + 1);
+            // If all keys for this provider are rate limited, try fallback
+            if (providerId !== "google" && keyManager.hasKeys("google")) {
+                console.log(`[LLMService] All ${providerId} keys rate limited, falling back to google`);
+                return callLLM(prompt, "google", 0);
             }
 
-            throw new LLMServiceError(`API request failed: ${response.statusText}`, response.status);
+            throw new LLMServiceError(`Rate limit exceeded on all available ${providerId} keys`, 429);
         }
 
-        const data: GeminiResponse = await response.json();
-
-        if (data.error) {
-            keyManager.markKeyFailed(apiKey);
-            throw new LLMServiceError(data.error.message, data.error.code);
-        }
-
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) {
-            throw new LLMServiceError("No response text from Gemini");
-        }
-
-        keyManager.markKeySuccess(apiKey);
-        return text;
-    } catch (error) {
-        if (error instanceof LLMServiceError || error instanceof APIKeyExhaustedError) {
-            throw error;
-        }
-
+        // Other errors
         keyManager.markKeyFailed(apiKey);
 
         if (retryCount < MAX_RETRIES) {
-            console.log(`[LLMService] Unexpected error, retrying (attempt ${retryCount + 1})`, error);
-            return callGeminiAPI(prompt, retryCount + 1);
+            console.log(`[LLMService] Request failed, retrying (attempt ${retryCount + 1})`);
+            return callLLM(prompt, providerId, retryCount + 1);
         }
 
-        throw new LLMServiceError(`Unexpected error: ${error instanceof Error ? error.message : "Unknown"}`);
+        throw error;
     }
 }
 
@@ -140,6 +107,8 @@ function parseJSONFromResponse<T>(response: string): T {
     try {
         return JSON.parse(cleaned);
     } catch {
+        // If it's not valid JSON, it might be a partial response or error text
+        // We'll throw but log the response for debugging if needed
         throw new LLMServiceError(`Failed to parse LLM response as JSON: ${response.substring(0, 100)}...`);
     }
 }
@@ -149,7 +118,8 @@ function parseJSONFromResponse<T>(response: string): T {
  */
 export async function analyzeIntent(
     query: string,
-    categories: Category[]
+    categories: Category[],
+    provider: LLMProvider = "google"
 ): Promise<LLMIntentResponse> {
     const categoryList = categories.map(c => `- ${c.name} (ID: ${c.id})`).join("\n");
 
@@ -174,7 +144,7 @@ Respond with a JSON object (and nothing else) in this exact format:
   "confidence": 0.0 to 1.0 indicating how confident you are in understanding their intent
 }`;
 
-    const response = await callGeminiAPI(prompt);
+    const response = await callLLM(prompt, provider);
     return parseJSONFromResponse<LLMIntentResponse>(response);
 }
 
@@ -184,7 +154,8 @@ Respond with a JSON object (and nothing else) in this exact format:
 export async function rankProducts(
     query: string,
     products: Product[],
-    intent: LLMIntentResponse
+    intent: LLMIntentResponse,
+    provider: LLMProvider = "google"
 ): Promise<Array<{ productId: string; matchScore: number; highlights: string[]; whyRecommended: string }>> {
     if (products.length === 0) {
         return [];
@@ -225,7 +196,7 @@ Respond with a JSON array (and nothing else) in this exact format:
 
 Only include products that are relevant. If no products match well, return an empty array.`;
 
-    const response = await callGeminiAPI(prompt);
+    const response = await callLLM(prompt, provider);
     return parseJSONFromResponse<Array<{ productId: string; matchScore: number; highlights: string[]; whyRecommended: string }>>(response);
 }
 
@@ -235,7 +206,8 @@ Only include products that are relevant. If no products match well, return an em
 export async function generateSummary(
     query: string,
     recommendationCount: number,
-    topProductName: string | null
+    topProductName: string | null,
+    provider: LLMProvider = "google"
 ): Promise<string> {
     if (recommendationCount === 0) {
         return "I couldn't find specific products matching your requirements. Could you provide more details about what you're looking for?";
@@ -249,7 +221,7 @@ You found ${recommendationCount} product recommendation(s)${topProductName ? `, 
 
 Write a brief, friendly 1-2 sentence summary to introduce the recommendations. Be helpful and conversational. Do not use markdown formatting.`;
 
-    const response = await callGeminiAPI(prompt);
+    const response = await callLLM(prompt, provider);
     return response.trim().replace(/```/g, "").replace(/^["']|["']$/g, "");
 }
 
@@ -260,7 +232,8 @@ Write a brief, friendly 1-2 sentence summary to introduce the recommendations. B
 export async function rankAndSummarize(
     query: string,
     products: Product[],
-    intent: LLMIntentResponse
+    intent: LLMIntentResponse,
+    provider: LLMProvider = "google"
 ): Promise<{
     rankings: Array<{ productId: string; matchScore: number; highlights: string[]; whyRecommended: string }>;
     summary: string;
@@ -312,10 +285,9 @@ Respond with a JSON object (and nothing else) in this exact format:
 
 Only include relevant products. If no products match well, return empty rankings.`;
 
-    const response = await callGeminiAPI(prompt);
+    const response = await callLLM(prompt, provider);
     return parseJSONFromResponse<{
         rankings: Array<{ productId: string; matchScore: number; highlights: string[]; whyRecommended: string }>;
         summary: string;
     }>(response);
 }
-

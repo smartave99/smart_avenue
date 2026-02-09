@@ -1,5 +1,6 @@
-import { getClubTiers } from "@/app/actions";
-import { Check, Crown, CreditCard, Gift, Truck } from "lucide-react";
+import { getClubTiers } from "@/app/club-actions";
+
+import { Crown, CreditCard, Gift, Truck } from "lucide-react";
 import ClientClubTiers from "@/components/ClientClubTiers";
 
 export const dynamic = "force-dynamic";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, PenTool, Smile, Utensils, Home as HomeIcon, Package, LucideIcon } from "lucide-react";
+import { ArrowRight, PenTool, Smile, Utensils, Home as HomeIcon, Package, LucideIcon, Smartphone, Cpu } from "lucide-react";
 import { getDepartments } from "@/app/actions";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -9,55 +9,86 @@ const iconMap: Record<string, LucideIcon> = {
     Utensils,
     Home: HomeIcon,
     Package,
+    Smartphone,
+    Cpu
 };
 
 export default async function Highlights() {
     const departments = await getDepartments();
 
+    // Fallback if no departments
+    const displayDepartments = departments.length > 0 ? departments : [
+        { id: "tech", title: "Smart Tech", description: "Latest gadgets and smart home devices.", icon: "Cpu", image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2670&auto=format&fit=crop" },
+        { id: "home", title: "Modern Home", description: "Contemporary furniture and decor.", icon: "Home", image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2600&auto=format&fit=crop" },
+        { id: "lifestyle", title: "Lifestyle", description: "Premium accessories for everyday.", icon: "Smile", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2599&auto=format&fit=crop" },
+    ];
+
     return (
-        <section className="py-20 bg-white">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-dark mb-4">
-                        Curated for <span className="text-brand-gold">You</span>
-                    </h2>
-                    <p className="text-gray-500 max-w-2xl mx-auto">
-                        Explore our diverse departments, each offering a unique selection of premium products tailored to your lifestyle.
-                    </p>
+        <section className="py-24 bg-slate-50 relative overflow-hidden">
+            {/* Tech Grid Background Pattern */}
+            <div className="absolute inset-0 z-0 opacity-[0.03]"
+                style={{
+                    backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+                    backgroundSize: "40px 40px"
+                }}
+            />
+
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div className="max-w-xl">
+                        <span className="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block">Departments</span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-brand-dark mb-4 tracking-tight">
+                            Curated Zones
+                        </h2>
+                        <p className="text-slate-500 text-lg leading-relaxed">
+                            Navigate through our specialized departments, each designed to offer the finest in quality and innovation.
+                        </p>
+                    </div>
+                    <Link href="/departments" className="group flex items-center gap-2 text-brand-dark font-semibold border-b border-brand-dark/20 pb-1 hover:text-brand-blue hover:border-brand-blue transition-all">
+                        View All Departments
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-                    {departments.map((item) => {
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {displayDepartments.slice(0, 3).map((item, idx) => {
                         const Icon = iconMap[item.icon] || Package;
-                        const color = "bg-brand-green/10 text-brand-green"; // Default color or map from ID
 
                         return (
                             <Link
-                                key={item.id}
+                                key={item.id || idx}
                                 href={`/departments#${item.id}`}
-                                className="group relative h-[400px] overflow-hidden rounded-2xl shadow-lg cursor-pointer block"
+                                className="group relative h-[500px] overflow-hidden rounded-[2rem] bg-white shadow-xl shadow-brand-dark/5 hover:shadow-2xl hover:shadow-brand-blue/10 transition-all duration-500"
                             >
-                                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                                {/* Image Container */}
+                                <div className="absolute inset-0 h-2/3 overflow-hidden">
+                                    <div className="absolute inset-0 bg-brand-dark/10 group-hover:bg-transparent transition-colors z-10" />
                                     <Image
                                         src={item.image}
                                         alt={item.title}
                                         fill
-                                        className="object-cover"
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
                                 </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 transition-opacity duration-300" />
 
-                                <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
-                                    <div className={`w-12 h-12 rounded-full ${color} flex items-center justify-center mb-4 shadow-lg`}>
-                                        <Icon className="w-6 h-6" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
-                                    <p className="text-gray-300 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
-                                        {item.description}
-                                    </p>
-                                    <div className="flex items-center text-brand-gold text-sm font-semibold gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                                        Shop Now <ArrowRight className="w-4 h-4" />
+                                {/* Content Container */}
+                                <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-white via-white to-transparent pt-12 px-8 pb-8 flex flex-col justify-end">
+                                    <div className="relative z-10">
+                                        <div className="w-14 h-14 rounded-2xl bg-brand-blue/10 flex items-center justify-center mb-6 text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors duration-300">
+                                            <Icon className="w-7 h-7" />
+                                        </div>
+
+                                        <h3 className="text-2xl font-bold text-brand-dark mb-2 group-hover:text-brand-blue transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-slate-500 mb-6 line-clamp-2">
+                                            {item.description}
+                                        </p>
+
+                                        <div className="flex items-center text-brand-dark font-medium text-sm group-hover:translate-x-2 transition-transform duration-300">
+                                            Explore Zone <ArrowRight className="w-4 h-4 ml-2" />
+                                        </div>
                                     </div>
                                 </div>
                             </Link>

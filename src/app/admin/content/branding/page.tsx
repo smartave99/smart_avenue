@@ -15,6 +15,7 @@ import {
     Share2
 } from "lucide-react";
 import Link from "next/link";
+import ImageUpload from "@/components/ImageUpload";
 
 interface BrandingContent {
     logoUrl: string;
@@ -125,35 +126,41 @@ export default function BrandingEditor() {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                                    <div className="mb-2">
+                                        <ImageUpload
+                                            folder="branding/logo"
+                                            multiple={false}
+                                            currentImages={content.logoUrl ? [content.logoUrl] : []}
+                                            onUpload={(files) => files[0] && setContent({ ...content, logoUrl: files[0].url })}
+                                            onRemove={() => setContent({ ...content, logoUrl: "" })}
+                                        />
+                                    </div>
                                     <input
                                         type="text"
                                         value={content.logoUrl}
                                         onChange={(e) => setContent({ ...content, logoUrl: e.target.value })}
-                                        placeholder="/logo.png or https://..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                        placeholder="Or enter URL manually..."
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 text-sm"
                                     />
-                                    {content.logoUrl && (
-                                        <div className="mt-2 p-2 bg-gray-50 rounded-lg">
-                                            <img
-                                                src={content.logoUrl}
-                                                alt="Logo preview"
-                                                className="h-12 object-contain"
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).style.display = 'none';
-                                                }}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Favicon URL</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Favicon</label>
+                                    <div className="mb-2">
+                                        <ImageUpload
+                                            folder="branding/favicon"
+                                            multiple={false}
+                                            currentImages={content.faviconUrl ? [content.faviconUrl] : []}
+                                            onUpload={(files) => files[0] && setContent({ ...content, faviconUrl: files[0].url })}
+                                            onRemove={() => setContent({ ...content, faviconUrl: "" })}
+                                        />
+                                    </div>
                                     <input
                                         type="text"
                                         value={content.faviconUrl}
                                         onChange={(e) => setContent({ ...content, faviconUrl: e.target.value })}
-                                        placeholder="/favicon.ico or https://..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                        placeholder="Or enter URL manually..."
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 text-sm"
                                     />
                                     <p className="text-xs text-gray-500 mt-1">Use .ico or .png (32x32 or 16x16)</p>
                                 </div>
@@ -167,26 +174,23 @@ export default function BrandingEditor() {
                                 Promotional Poster/Banner
                             </h3>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Poster Image URL</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Poster Image</label>
+                                <div className="mb-2">
+                                    <ImageUpload
+                                        folder="branding/poster"
+                                        multiple={false}
+                                        currentImages={content.posterUrl ? [content.posterUrl] : []}
+                                        onUpload={(files) => files[0] && setContent({ ...content, posterUrl: files[0].url })}
+                                        onRemove={() => setContent({ ...content, posterUrl: "" })}
+                                    />
+                                </div>
                                 <input
                                     type="text"
                                     value={content.posterUrl}
                                     onChange={(e) => setContent({ ...content, posterUrl: e.target.value })}
-                                    placeholder="https://... (for homepage banner)"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                    placeholder="Or enter URL manually..."
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 text-sm"
                                 />
-                                {content.posterUrl && (
-                                    <div className="mt-2 p-2 bg-gray-50 rounded-lg">
-                                        <img
-                                            src={content.posterUrl}
-                                            alt="Poster preview"
-                                            className="max-h-40 object-contain rounded"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).style.display = 'none';
-                                            }}
-                                        />
-                                    </div>
-                                )}
                             </div>
                         </div>
 

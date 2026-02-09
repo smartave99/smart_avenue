@@ -27,16 +27,8 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 // Persist minimal auth state to localStorage for faster initial render
+// Persist minimal auth state to localStorage for faster initial render
 const AUTH_STORAGE_KEY = "smart_avenue_auth";
-
-function getPersistedAuth(): boolean {
-    if (typeof window === "undefined") return false;
-    try {
-        return localStorage.getItem(AUTH_STORAGE_KEY) === "true";
-    } catch {
-        return false;
-    }
-}
 
 function setPersistedAuth(isLoggedIn: boolean) {
     if (typeof window === "undefined") return;

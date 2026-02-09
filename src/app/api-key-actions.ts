@@ -14,9 +14,12 @@ const GEMINI_MODEL = "gemini-2.0-flash";
 
 // ==================== API KEY TYPES ====================
 
+import { LLMProvider } from "@/types/assistant-types";
+
 export interface StoredAPIKey {
     id: string;
     name: string;
+    provider: LLMProvider;
     key: string;
     maskedKey: string;
     isActive: boolean;
@@ -43,6 +46,7 @@ export async function getAPIKeys(): Promise<StoredAPIKey[]> {
             return {
                 id: doc.id,
                 name: data.name || `Key ${doc.id.substring(0, 6)}`,
+                provider: data.provider || "google", // Default to google for existing keys
                 key: data.key,
                 maskedKey: maskKey(data.key),
                 isActive: data.isActive ?? true,
@@ -61,7 +65,7 @@ export async function getAPIKeys(): Promise<StoredAPIKey[]> {
 /**
  * Add a new API key
  */
-export async function addAPIKey(name: string, key: string) {
+export async function addAPIKey(name: string, key: string, provider: LLMProvider = "google") {
     try {
         // Validate key format (basic check)
         if (!key || key.trim().length < 10) {
@@ -82,6 +86,7 @@ export async function addAPIKey(name: string, key: string) {
 
         const docRef = await getAdminDb().collection("apiKeys").add({
             name: name.trim() || `Key ${Date.now()}`,
+            provider,
             key: trimmedKey,
             isActive: true,
             isValid: null,
@@ -103,13 +108,14 @@ export async function addAPIKey(name: string, key: string) {
 /**
  * Update an existing API key
  */
-export async function updateAPIKey(id: string, data: { name?: string; key?: string; isActive?: boolean }) {
+export async function updateAPIKey(id: string, data: { name?: string; key?: string; provider?: LLMProvider; isActive?: boolean }) {
     try {
         const updateData: Record<string, unknown> = {
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
 
         if (data.name !== undefined) updateData.name = data.name.trim();
+        if (data.provider !== undefined) updateData.provider = data.provider;
         if (data.key !== undefined) {
             updateData.key = data.key.trim();
             updateData.isValid = null; // Reset validation when key changes
@@ -246,9 +252,13 @@ export async function syncAPIKeysToManager() {
             .where("isActive", "==", true)
             .get();
 
-        const keys = snapshot.docs
-            .map((doc: admin.firestore.QueryDocumentSnapshot) => doc.data().key as string)
-            .filter((key: string) => key && key.trim() !== "");
+        const keys = snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => {
+            const data = doc.data();
+            return {
+                key: data.key as string,
+                provider: (data.provider || "google") as LLMProvider
+            };
+        }).filter(k => k.key && k.key.trim() !== "");
 
         const manager = getAPIKeyManager();
         manager.loadFirestoreKeys(keys);

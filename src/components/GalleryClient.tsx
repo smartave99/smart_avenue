@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { X, ZoomIn } from "lucide-react";
+import Image from "next/image";
 import { GalleryImage } from "@/app/actions";
 
 interface GalleryClientProps {
@@ -41,11 +42,15 @@ export default function GalleryClient({ initialImages }: GalleryClientProps) {
                                 className="break-inside-avoid relative group rounded-2xl overflow-hidden cursor-zoom-in shadow-md hover:shadow-xl transition-all"
                                 onClick={() => setSelectedImage(image.id)}
                             >
-                                <img
-                                    src={image.imageUrl}
-                                    alt="Gallery Image"
-                                    className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                />
+                                <div className="relative w-full h-auto aspect-[4/5]">
+                                    <Image
+                                        src={image.imageUrl}
+                                        alt="Gallery Image"
+                                        fill
+                                        className="object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                        unoptimized
+                                    />
+                                </div>
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                                     <div className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white">
                                         <ZoomIn className="w-6 h-6" />

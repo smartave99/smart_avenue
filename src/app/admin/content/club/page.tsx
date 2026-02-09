@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
-import { getClubTiers, updateClubTiers, ClubTier } from "@/app/actions";
+import { getClubTiers, updateClubTiers, ClubTier } from "@/app/club-actions";
+
 import {
     Loader2,
     ArrowLeft,
@@ -262,14 +263,15 @@ export default function ClubContentManager() {
                                     </button>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    {newTier.benefits.map((b, i) => (
-                                        <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-sm rounded-full">
-                                            {b}
+                                    {newTier.benefits.map((benefit: string, bIndex: number) => (
+                                        <span key={bIndex} className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 text-sm rounded-full">
+                                            {benefit}
                                             <button
                                                 type="button"
                                                 onClick={() => setNewTier({
                                                     ...newTier,
-                                                    benefits: newTier.benefits.filter((_, idx) => idx !== i)
+                                                    benefits: newTier.benefits.filter((_, idx) => idx !== bIndex)
+
                                                 })}
                                                 className="hover:text-red-500"
                                             >
@@ -369,17 +371,18 @@ export default function ClubContentManager() {
                                             </button>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
-                                            {tier.benefits.map((benefit, bIndex) => (
-                                                <span key={bIndex} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                                                    {benefit}
+                                            {tier.benefits.map((b: string, i: number) => (
+                                                <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                                                    {b}
                                                     <button
-                                                        onClick={() => removeBenefitFromExisting(index, bIndex)}
+                                                        onClick={() => removeBenefitFromExisting(index, i)}
                                                         className="text-gray-400 hover:text-red-500 ml-1"
                                                     >
                                                         <X className="w-3 h-3" />
                                                     </button>
                                                 </span>
                                             ))}
+
                                         </div>
                                     </div>
                                 </div>

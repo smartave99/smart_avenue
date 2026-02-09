@@ -1,6 +1,7 @@
 import { getProducts, getCategories, getOffers, searchProducts } from "@/app/actions";
 import Link from "next/link";
-import { Package } from "lucide-react";
+import { Package, Search, Filter, ChevronRight, Zap, X } from "lucide-react";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -11,8 +12,6 @@ export default async function ProductsPage({
     searchParams: Promise<{ category?: string; subcategory?: string; search?: string }>
 }) {
     const params = await searchParams;
-    // Use searchProducts if there's a search query (cached + optimized)
-    // Otherwise fetch products normally
     const [products, categories, offers] = await Promise.all([
         params.search
             ? searchProducts(params.search, params.category, params.subcategory)
@@ -23,15 +22,14 @@ export default async function ProductsPage({
 
     const mainCategories = categories.filter(c => !c.parentId);
     const getSubcategories = (parentId: string) => categories.filter(c => c.parentId === parentId);
-    const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name || "";
+    const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name || "Unknown";
     const getOffer = (id?: string) => id ? offers.find(o => o.id === id) : null;
 
     // Filter products
     let filteredProducts = params.search
-        ? products  // Already filtered by searchProducts
+        ? products
         : products.filter(p => p.available);
 
-    // Category filter (only if not already filtered by searchProducts)
     if (!params.search) {
         if (params.category) {
             filteredProducts = filteredProducts.filter(p =>
@@ -44,57 +42,78 @@ export default async function ProductsPage({
     }
 
     return (
-        <div className="min-h-screen bg-brand-sand">
-            {/* Editorial Hero */}
-            <div className="relative h-[40vh] min-h-[400px] w-full bg-brand-green overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-green/90 via-transparent to-transparent"></div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                    <span className="text-brand-gold tracking-[0.2em] text-sm uppercase mb-4 font-medium">Curated Collection</span>
-                    <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 font-light">
-                        The <span className="italic font-normal">Essentials</span>
-                    </h1>
-                    <p className="text-gray-200 text-lg max-w-xl font-light leading-relaxed">
-                        Discover our selection of premium home goods, designed to elevate your everyday living with timeless elegance.
+        <div className="min-h-screen bg-slate-50">
+            {/* Tech Header */}
+            <div className="relative py-20 bg-brand-dark text-white overflow-hidden">
+                <div className="absolute inset-0 bg-[#0A0A0A]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-brand-lime/10 via-transparent to-transparent" />
+                <div className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: "linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)", backgroundSize: "30px 30px" }}
+                />
+                <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <span className="text-brand-lime font-bold tracking-widest uppercase text-xs mb-2 block">Catalog</span>
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                            The <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lime to-brand-blue">Collection</span>
+                        </h1>
+                    </div>
+                    <p className="text-slate-400 max-w-md text-sm md:text-base leading-relaxed hidden md:block text-right">
+                        Explore our premium tech-forward inventory. Quality assured, delivered tomorrow.
                     </p>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-16">
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Refined Sidebar */}
-                    <aside className="lg:w-64 flex-shrink-0 space-y-8">
-                        <div>
-                            <h3 className="font-serif text-xl text-brand-dark mb-6 pb-2 border-b border-gray-200">Categories</h3>
-                            <nav className="space-y-2">
+            <div className="container mx-auto px-4 py-12">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Modern Sidebar */}
+                    <aside className="lg:w-64 flex-shrink-0">
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 sticky top-24">
+                            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-slate-100">
+                                <Filter className="w-4 h-4 text-brand-blue" />
+                                <h3 className="font-bold text-brand-dark">Filters</h3>
+                            </div>
+
+                            <nav className="space-y-1">
                                 <Link
                                     href="/products"
-                                    className={`block text-sm transition-colors duration-300 ${!params.category ? "text-brand-gold font-medium" : "text-gray-500 hover:text-brand-dark"
+                                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${!params.category
+                                        ? "bg-brand-dark text-white font-medium"
+                                        : "text-slate-600 hover:bg-slate-50 hover:text-brand-dark"
                                         }`}
                                 >
-                                    All Collections
+                                    All Products
+                                    {!params.category && <ChevronRight className="w-3 h-3" />}
                                 </Link>
+
+                                <div className="h-px bg-slate-100 my-2" />
+
                                 {mainCategories.map(cat => {
                                     const subs = getSubcategories(cat.id);
                                     const isActive = params.category === cat.id;
+
                                     return (
-                                        <div key={cat.id} className="pt-2">
+                                        <div key={cat.id} className="group">
                                             <Link
                                                 href={`/products?category=${cat.id}`}
-                                                className={`block text-sm transition-colors duration-300 ${isActive ? "text-brand-gold font-medium" : "text-gray-500 hover:text-brand-dark"
+                                                className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${isActive
+                                                    ? "bg-brand-blue/10 text-brand-blue font-bold"
+                                                    : "text-slate-600 hover:bg-slate-50 hover:text-brand-dark"
                                                     }`}
                                             >
                                                 {cat.name}
+                                                {isActive && <ChevronRight className="w-3 h-3" />}
                                             </Link>
-                                            {subs.length > 0 && isActive && (
-                                                <div className="ml-3 mt-2 space-y-2 border-l border-gray-200 pl-3">
+
+                                            {/* Subcategories */}
+                                            {subs.length > 0 && (isActive || params.category === cat.id) && (
+                                                <div className="ml-4 mt-1 border-l-2 border-slate-100 pl-2 space-y-1">
                                                     {subs.map(sub => (
                                                         <Link
                                                             key={sub.id}
                                                             href={`/products?category=${cat.id}&subcategory=${sub.id}`}
-                                                            className={`block text-xs transition-colors duration-300 ${params.subcategory === sub.id
-                                                                ? "text-brand-dark font-medium"
-                                                                : "text-gray-400 hover:text-brand-dark"
+                                                            className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${params.subcategory === sub.id
+                                                                ? "text-brand-blue font-bold bg-blue-50"
+                                                                : "text-slate-500 hover:text-brand-dark hover:bg-slate-50"
                                                                 }`}
                                                         >
                                                             {sub.name}
@@ -109,108 +128,118 @@ export default async function ProductsPage({
                         </div>
                     </aside>
 
-                    {/* Editorial Grid */}
+                    {/* Main Content */}
                     <main className="flex-1">
-                        {/* Search Indicator */}
-                        {params.search && (
-                            <div className="mb-6 flex items-center gap-3 text-sm">
-                                <span className="text-gray-400">Searching for:</span>
-                                <span className="px-3 py-1 bg-brand-gold/10 text-brand-gold rounded-full font-medium">
-                                    &quot;{params.search}&quot;
+                        {/* active filters bar */}
+                        {(params.search || params.category) && (
+                            <div className="flex flex-wrap items-center gap-2 mb-6">
+                                {params.search && (
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-dark text-white text-xs rounded-full">
+                                        <Search className="w-3 h-3" />
+                                        &quot;{params.search}&quot;
+                                        <Link href="/products" className="hover:text-brand-lime"><X className="w-3 h-3" /></Link>
+                                    </div>
+                                )}
+                                {params.category && (
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-700 text-xs rounded-full font-medium">
+                                        Category: {getCategoryName(params.category)}
+                                        <Link href="/products" className="hover:text-red-500"><X className="w-3 h-3" /></Link>
+                                    </div>
+                                )}
+                                <span className="text-xs text-slate-400 ml-auto">
+                                    {filteredProducts.length} Results
                                 </span>
-                                <Link
-                                    href="/products"
-                                    className="text-gray-400 hover:text-brand-dark underline transition-colors"
-                                >
-                                    Clear search
-                                </Link>
                             </div>
                         )}
 
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
-                            <p className="text-gray-500 text-sm font-light tracking-wide">
-                                Showing {filteredProducts.length} Results{params.search ? ` for "${params.search}"` : ''}
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-400">Sort by:</span>
-                                <select className="bg-transparent text-sm text-brand-dark font-medium focus:outline-none cursor-pointer">
-                                    <option>Featured</option>
-                                    <option>Newest</option>
-                                    <option>Price: Low to High</option>
-                                    <option>Price: High to Low</option>
-                                </select>
-                            </div>
-                        </div>
-
                         {filteredProducts.length === 0 ? (
-                            <div className="py-20 text-center">
-                                <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                                <h3 className="text-xl font-serif text-gray-400">Collection Empty</h3>
-                                <p className="text-gray-400 font-light mt-2">Try adjusting your filters.</p>
+                            <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-slate-100">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                    <Package className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900">No products found</h3>
+                                <p className="text-slate-500 mt-2">Try adjusting your search or filters.</p>
+                                <Link href="/products" className="inline-block mt-6 px-6 py-2 bg-brand-dark text-white rounded-full text-sm font-bold hover:bg-brand-blue transition-colors">
+                                    Clear All Filters
+                                </Link>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {filteredProducts.map((product) => {
                                     const offer = getOffer(product.offerId);
 
                                     return (
-                                        <div key={product.id} className="group cursor-pointer">
-                                            {/* Image Container */}
-                                            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4">
+                                        <Link
+                                            key={product.id}
+                                            href={`/products/${product.id}`} // Assuming detailed page exists or will exist, otherwise just #
+                                            className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-brand-lime/30 flex flex-col"
+                                        >
+                                            {/* Image Area */}
+                                            <div className="relative aspect-square overflow-hidden bg-slate-100">
                                                 {product.imageUrl ? (
-                                                    <img
+                                                    <Image
                                                         src={product.imageUrl}
                                                         alt={product.name}
-                                                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                                        fill
+                                                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                                                        <Package className="w-8 h-8 text-gray-200" />
+                                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                        <Package className="w-10 h-10" />
                                                     </div>
                                                 )}
 
-                                                {/* Overlay Actions */}
-                                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                                    <button className="bg-white text-brand-dark px-6 py-3 text-sm tracking-widest uppercase hover:bg-brand-dark hover:text-white transition-colors duration-300">
-                                                        Quick View
-                                                    </button>
-                                                </div>
-
-                                                {/* Minimal Badges */}
-                                                <div className="absolute top-0 left-0 p-3 flex flex-col gap-2">
+                                                {/* Badges */}
+                                                <div className="absolute top-3 left-3 flex flex-col gap-2">
                                                     {offer && (
-                                                        <span className="bg-brand-dark text-white text-[10px] uppercase tracking-widest px-2 py-1">
+                                                        <span className="bg-brand-lime text-brand-dark text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md shadow-sm">
                                                             -{offer.discount}
                                                         </span>
                                                     )}
                                                     {product.featured && (
-                                                        <span className="bg-brand-gold text-white text-[10px] uppercase tracking-widest px-2 py-1">
-                                                            Editor&apos;s Pick
+                                                        <span className="bg-brand-dark text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                                                            <Zap className="w-3 h-3 fill-current" /> Hot
                                                         </span>
                                                     )}
+                                                </div>
+
+                                                {/* Hover Action */}
+                                                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+                                                    <button className="w-full py-2 bg-white text-brand-dark text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-brand-lime transition-colors">
+                                                        Quick View
+                                                    </button>
                                                 </div>
                                             </div>
 
-                                            {/* Minimal Details */}
-                                            <div className="text-center">
-                                                <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                                                    {getCategoryName(product.categoryId)}
-                                                </p>
-                                                <h3 className="font-serif text-lg text-brand-dark group-hover:text-brand-gold transition-colors duration-300 mb-2">
-                                                    {product.name}
-                                                </h3>
-                                                <div className="flex items-center justify-center gap-3 text-sm">
-                                                    <span className={`font-medium ${product.originalPrice ? 'text-brand-gold' : 'text-gray-600'}`}>
-                                                        ₹{product.price.toLocaleString()}
-                                                    </span>
-                                                    {product.originalPrice && (
-                                                        <span className="text-gray-400 line-through decoration-1">
-                                                            ₹{product.originalPrice.toLocaleString()}
+                                            {/* Details */}
+                                            <div className="p-5 flex-1 flex flex-col">
+                                                <div className="mb-2">
+                                                    <p className="text-xs text-slate-400 font-medium uppercase tracking-wide">
+                                                        {getCategoryName(product.categoryId)}
+                                                    </p>
+                                                    <h3 className="text-base font-bold text-brand-dark group-hover:text-brand-blue transition-colors line-clamp-1">
+                                                        {product.name}
+                                                    </h3>
+                                                </div>
+
+                                                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
+                                                    <div className="flex items-baseline gap-2">
+                                                        <span className={`text-lg font-bold ${product.originalPrice ? 'text-brand-blue' : 'text-slate-900'}`}>
+                                                            ₹{product.price.toLocaleString()}
                                                         </span>
-                                                    )}
+                                                        {product.originalPrice && (
+                                                            <span className="text-xs text-slate-400 line-through">
+                                                                ₹{product.originalPrice.toLocaleString()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-brand-dark group-hover:text-white transition-colors">
+                                                        <ChevronRight className="w-4 h-4" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Link>
                                     );
                                 })}
                             </div>

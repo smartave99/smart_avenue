@@ -2,7 +2,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from "lucide-react";
-
 import { useSiteConfig } from "@/context/SiteConfigContext";
 
 export default function Footer() {
@@ -10,98 +9,93 @@ export default function Footer() {
     const { branding, contact } = config;
 
     return (
-        <footer className="bg-brand-dark text-white pt-16 pb-8">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-                    {/* Brand Column */}
-                    <div className="space-y-4">
-                        <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="relative w-40 h-12">
+        <footer className="bg-brand-dark text-white pt-24 pb-12 relative overflow-hidden">
+            {/* Background Texture */}
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="absolute -top-[200px] -right-[200px] w-[500px] h-[500px] bg-brand-blue/10 blur-[120px] rounded-full pointer-events-none" />
+
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+
+                    {/* Brand Column - Spans 4 columns */}
+                    <div className="lg:col-span-4 space-y-6">
+                        <Link href="/" className="block">
+                            <div className="relative w-48 h-12">
                                 <Image
                                     src="/logo.png"
-                                    alt="Smart Avenue"
+                                    alt={branding.siteName}
                                     fill
                                     className="object-contain brightness-0 invert"
                                 />
                             </div>
                         </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
-                            {branding.tagline || "Patna's premier shopping destination where luxury meets convenience. Experience world-class retail therapy."}
+                        <p className="text-slate-400 text-lg leading-relaxed max-w-sm font-light">
+                            {branding.tagline || "Patna's premier destination for modern living. Elevating your lifestyle with curated tech, home, and fashion."}
                         </p>
-                        <div className="flex gap-4">
-                            <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold hover:text-brand-dark transition-colors">
-                                <Facebook className="w-4 h-4" />
-                            </a>
-                            {contact.instagramUrl && (
-                                <a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold hover:text-brand-dark transition-colors">
-                                    <Instagram className="w-4 h-4" />
+                        <div className="flex gap-4 pt-4">
+                            {[Facebook, Instagram, Twitter].map((Icon, i) => (
+                                <a key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-brand-lime hover:text-brand-dark hover:border-brand-lime transition-all duration-300">
+                                    <Icon className="w-4 h-4" />
                                 </a>
-                            )}
-                            {/* WhatsApp is not in the type definition I created earlier, I might need to add it or remove it. 
-                                I'll add it to the type definition later. For now, I'll remove it or comment it out if it doesn't exist.
-                                Actually, I'll just change it to contact.instagramUrl and contact.twitterUrl.
-                                Let's check what I defined in src/types/site-config.ts.
-                                facebookUrl?: string;
-                                instagramUrl?: string;
-                                twitterUrl?: string;
-                                No whatsappUrl.
-                            */}
-                            <a href={contact.twitterUrl || "#"} className="p-2 bg-white/5 rounded-full hover:bg-brand-gold hover:text-brand-dark transition-colors">
-                                <Twitter className="w-4 h-4" />
-                            </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-brand-gold font-serif font-semibold mb-4 text-lg">Quick Links</h3>
-                        <ul className="space-y-2 text-sm text-gray-400">
-                            <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-                            <li><Link href="/departments" className="hover:text-white transition-colors">Departments</Link></li>
-                            <li><Link href="/club" className="hover:text-white transition-colors">The Smart Club</Link></li>
-                            <li><Link href="/offers" className="hover:text-white transition-colors">Weekly Offers</Link></li>
-                            <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
-                        </ul>
-                    </div>
+                    {/* Spacer - Spans 1 column */}
+                    <div className="hidden lg:block lg:col-span-1" />
 
-                    {/* Customer Care */}
-                    <div>
-                        <h3 className="text-brand-gold font-serif font-semibold mb-4 text-lg">Customer Care</h3>
-                        <ul className="space-y-2 text-sm text-gray-400">
-                            <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
-                            <li><Link href="/faq" className="hover:text-white transition-colors">FAQs</Link></li>
-                            <li><Link href="/returns" className="hover:text-white transition-colors">Returns & Exchanges</Link></li>
-                            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                        </ul>
-                    </div>
+                    {/* Navigation - Spans 7 columns */}
+                    <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-3 gap-10">
+                        {/* Shop */}
+                        <div>
+                            <h3 className="text-white font-bold text-lg mb-6 tracking-tight">Shop</h3>
+                            <ul className="space-y-4">
+                                <li><Link href="/departments" className="text-slate-400 hover:text-brand-lime transition-colors">Departments</Link></li>
+                                <li><Link href="/products" className="text-slate-400 hover:text-brand-lime transition-colors">All Products</Link></li>
+                                <li><Link href="/offers" className="text-slate-400 hover:text-brand-lime transition-colors">Weekly Offers</Link></li>
+                                <li><Link href="/new-arrivals" className="text-slate-400 hover:text-brand-lime transition-colors">New Arrivals</Link></li>
+                            </ul>
+                        </div>
 
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-brand-gold font-serif font-semibold mb-4 text-lg">Visit Us</h3>
-                        <ul className="space-y-4 text-sm text-gray-400">
-                            <li className="flex items-start gap-3">
-                                <MapPin className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" />
-                                <span className="whitespace-pre-line">{contact.address}</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <Phone className="w-5 h-5 text-brand-gold shrink-0" />
-                                <span>{contact.phone}</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                                <Mail className="w-5 h-5 text-brand-gold shrink-0" />
-                                <span>{contact.email}</span>
-                            </li>
-                        </ul>
+                        {/* Company */}
+                        <div>
+                            <h3 className="text-white font-bold text-lg mb-6 tracking-tight">Company</h3>
+                            <ul className="space-y-4">
+                                <li><Link href="/about" className="text-slate-400 hover:text-brand-lime transition-colors">Our Story</Link></li>
+                                <li><Link href="/careers" className="text-slate-400 hover:text-brand-lime transition-colors">Careers</Link></li>
+                                <li><Link href="/contact" className="text-slate-400 hover:text-brand-lime transition-colors">Contact Us</Link></li>
+                                <li><Link href="/stores" className="text-slate-400 hover:text-brand-lime transition-colors">Store Locator</Link></li>
+                            </ul>
+                        </div>
+
+                        {/* Contact */}
+                        <div className="space-y-6">
+                            <h3 className="text-white font-bold text-lg mb-6 tracking-tight">Get in Touch</h3>
+                            <div className="flex items-start gap-4 text-slate-400 group">
+                                <MapPin className="w-5 h-5 text-brand-blue shrink-0 mt-1" />
+                                <span className="group-hover:text-white transition-colors">{contact.address}</span>
+                            </div>
+                            <div className="flex items-center gap-4 text-slate-400 group">
+                                <Phone className="w-5 h-5 text-brand-blue shrink-0" />
+                                <span className="group-hover:text-white transition-colors">{contact.phone}</span>
+                            </div>
+                            <div className="flex items-center gap-4 text-slate-400 group">
+                                <Mail className="w-5 h-5 text-brand-blue shrink-0" />
+                                <span className="group-hover:text-white transition-colors">{contact.email}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} Smart Avenue Retail Pvt. Ltd. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Terms</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Sitemap</Link>
+                {/* Bottom Bar */}
+                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-slate-500 text-sm">
+                        &copy; {new Date().getFullYear()} {branding.siteName}. All rights reserved.
+                    </p>
+                    <div className="flex gap-8 text-sm text-slate-500">
+                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                        <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+                        <Link href="/sitemap" className="hover:text-white transition-colors">Sitemap</Link>
                     </div>
                 </div>
             </div>

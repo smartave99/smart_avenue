@@ -4,8 +4,11 @@ import { Product } from "@/app/actions";
 
 // ==================== API KEY MANAGEMENT ====================
 
+export type LLMProvider = "google" | "openai" | "anthropic";
+
 export interface APIKeyConfig {
     key: string;
+    provider: LLMProvider;
     index: number;
     callCount: number;
     lastUsed: Date | null;
@@ -17,6 +20,7 @@ export interface APIKeyConfig {
 
 export interface KeyHealthStatus {
     index: number;
+    provider: LLMProvider;
     maskedKey: string;
     callCount: number;
     isActive: boolean;

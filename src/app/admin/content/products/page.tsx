@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
+
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import {
@@ -27,14 +29,12 @@ import {
     EyeOff,
     Tag,
     X,
-    Filter,
-    Upload,
-    Upload
+    Filter
+
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function ProductsManager() {
     const { user, loading: authLoading } = useAuth();
@@ -51,7 +51,6 @@ export default function ProductsManager() {
     // ... filters state
     const [filterCategory, setFilterCategory] = useState<string>("");
     const [filterAvailable, setFilterAvailable] = useState<string>("");
-    const [uploading, setUploading] = useState(false);
 
     const [formData, setFormData] = useState<{
         name: string;
@@ -137,34 +136,7 @@ export default function ProductsManager() {
         setEditingId(null);
     };
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
 
-        setUploading(true);
-        const newImages: string[] = [];
-
-        try {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                newImages.push(url);
-            }
-
-            setFormData(prev => ({
-                ...prev,
-                images: [...prev.images, ...newImages],
-                imageUrl: prev.imageUrl || newImages[0] || "" // Set primary if empty
-            }));
-        } catch (error) {
-            console.error("Error uploading images:", error);
-            alert("Failed to upload images. Please try again.");
-        } finally {
-            setUploading(false);
-        }
-    };
 
     const removeImage = (indexToRemove: number) => {
         setFormData(prev => {
@@ -346,56 +318,28 @@ export default function ProductsManager() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Images</label>
-                                    <div className="flex items-center gap-2">
-                                        <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors text-sm text-gray-700 border border-gray-300">
-                                            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                                            {uploading ? "Uploading..." : "Choose Files"}
-                                            <input
-                                                type="file"
-                                                multiple
-                                                accept="image/*"
-                                                onChange={handleImageUpload}
-                                                className="hidden"
-                                                disabled={uploading}
-                                            />
-                                        </label>
-                                        <span className="text-xs text-gray-500">{formData.images.length} images selected</span>
-                                    </div>
-                                    <div className="mt-2 text-xs text-gray-500">
-                                        Or paste URL below as fallback/primary
-                                    </div>
-                                    <input
-                                        type="url"
-                                        value={formData.imageUrl}
-                                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                                        placeholder="https://..."
-                                        className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 text-sm"
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
+                                    <ImageUpload
+                                        folder="products"
+                                        multiple
+                                        currentImages={formData.images}
+                                        onUpload={(files) => setFormData(prev => ({
+                                            ...prev,
+                                            images: [...prev.images, ...files.map(f => f.url)],
+                                            imageUrl: prev.imageUrl || files[0]?.url || ""
+                                        }))}
+                                        onRemove={(index) => removeImage(index)}
                                     />
-
-                                    {/* Image Preview */}
-                                    {formData.images.length > 0 && (
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                            {formData.images.map((img, idx) => (
-                                                <div key={idx} className="relative w-16 h-16 border border-gray-200 rounded-md overflow-hidden group">
-                                                    <Image
-                                                        src={img}
-                                                        alt="Preview"
-                                                        fill
-                                                        className="object-cover"
-                                                        unoptimized
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeImage(idx)}
-                                                        className="absolute top-0 right-0 bg-red-500 text-white p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <X className="w-3 h-3" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className="mt-2">
+                                        <label className="block text-xs text-gray-500 mb-1">Primary Image URL (Optional override)</label>
+                                        <input
+                                            type="url"
+                                            value={formData.imageUrl}
+                                            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                            placeholder="https://..."
+                                            className="w-full px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-amber-500"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

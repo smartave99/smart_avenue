@@ -27,8 +27,12 @@ import {
     Eye,
     EyeOff,
     Zap,
-    Shield
+    Shield,
+    Bot,
+    Sparkles,
+    Brain
 } from "lucide-react";
+import { LLMProvider } from "@/types/assistant-types";
 import Link from "next/link";
 
 export default function APIKeyManager() {
@@ -54,9 +58,14 @@ export default function APIKeyManager() {
         }>;
     } | null>(null);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        key: string;
+        provider: LLMProvider;
+    }>({
         name: "",
         key: "",
+        provider: "google",
     });
 
     useEffect(() => {
@@ -90,9 +99,9 @@ export default function APIKeyManager() {
         e.preventDefault();
         setSaving(true);
 
-        const result = await addAPIKey(formData.name, formData.key);
+        const result = await addAPIKey(formData.name, formData.key, formData.provider);
         if (result.success) {
-            setFormData({ name: "", key: "" });
+            setFormData({ name: "", key: "", provider: "google" });
             setShowAddForm(false);
             await loadData();
         } else {
@@ -211,6 +220,49 @@ export default function APIKeyManager() {
                         </div>
                         <form onSubmit={handleAddKey} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Provider
+                                    </label>
+                                    <div className="flex gap-4">
+                                        <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${formData.provider === 'google' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-gray-200 hover:bg-gray-50'}`}>
+                                            <input
+                                                type="radio"
+                                                name="provider"
+                                                value="google"
+                                                checked={formData.provider === 'google'}
+                                                onChange={() => setFormData({ ...formData, provider: 'google' })}
+                                                className="hidden"
+                                            />
+                                            <Sparkles className="w-5 h-5" />
+                                            <span className="font-medium">Google Gemini</span>
+                                        </label>
+                                        <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${formData.provider === 'openai' ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-gray-200 hover:bg-gray-50'}`}>
+                                            <input
+                                                type="radio"
+                                                name="provider"
+                                                value="openai"
+                                                checked={formData.provider === 'openai'}
+                                                onChange={() => setFormData({ ...formData, provider: 'openai' })}
+                                                className="hidden"
+                                            />
+                                            <Bot className="w-5 h-5" />
+                                            <span className="font-medium">OpenAI</span>
+                                        </label>
+                                        <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${formData.provider === 'anthropic' ? 'bg-purple-50 border-purple-500 text-purple-700' : 'bg-white border-gray-200 hover:bg-gray-50'}`}>
+                                            <input
+                                                type="radio"
+                                                name="provider"
+                                                value="anthropic"
+                                                checked={formData.provider === 'anthropic'}
+                                                onChange={() => setFormData({ ...formData, provider: 'anthropic' })}
+                                                className="hidden"
+                                            />
+                                            <Brain className="w-5 h-5" />
+                                            <span className="font-medium">Anthropic</span>
+                                        </label>
+                                    </div>
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Key Name (Optional)
@@ -225,7 +277,7 @@ export default function APIKeyManager() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Gemini API Key *
+                                        API Key *
                                     </label>
                                     <input
                                         type="text"
@@ -280,20 +332,20 @@ export default function APIKeyManager() {
                                 <div key={keyItem.id} className="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
                                     <div className="flex-shrink-0">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${keyItem.isActive
-                                                ? keyItem.isValid === true
-                                                    ? 'bg-green-100'
-                                                    : keyItem.isValid === false
-                                                        ? 'bg-red-100'
-                                                        : 'bg-amber-100'
-                                                : 'bg-gray-100'
+                                            ? keyItem.isValid === true
+                                                ? 'bg-green-100'
+                                                : keyItem.isValid === false
+                                                    ? 'bg-red-100'
+                                                    : 'bg-amber-100'
+                                            : 'bg-gray-100'
                                             }`}>
                                             <Key className={`w-5 h-5 ${keyItem.isActive
-                                                    ? keyItem.isValid === true
-                                                        ? 'text-green-600'
-                                                        : keyItem.isValid === false
-                                                            ? 'text-red-600'
-                                                            : 'text-amber-600'
-                                                    : 'text-gray-400'
+                                                ? keyItem.isValid === true
+                                                    ? 'text-green-600'
+                                                    : keyItem.isValid === false
+                                                        ? 'text-red-600'
+                                                        : 'text-amber-600'
+                                                : 'text-gray-400'
                                                 }`} />
                                         </div>
                                     </div>
@@ -301,6 +353,15 @@ export default function APIKeyManager() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
                                             <h4 className="font-semibold text-gray-800 truncate">{keyItem.name}</h4>
+                                            <span className={`px-2 py-0.5 text-xs rounded flex items-center gap-1 border ${keyItem.provider === 'openai' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                keyItem.provider === 'anthropic' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                                                    'bg-blue-50 text-blue-700 border-blue-200'
+                                                }`}>
+                                                {keyItem.provider === 'openai' && <Bot className="w-3 h-3" />}
+                                                {keyItem.provider === 'anthropic' && <Brain className="w-3 h-3" />}
+                                                {(!keyItem.provider || keyItem.provider === 'google') && <Sparkles className="w-3 h-3" />}
+                                                {keyItem.provider === 'openai' ? 'OpenAI' : keyItem.provider === 'anthropic' ? 'Anthropic' : 'Gemini'}
+                                            </span>
                                             {!keyItem.isActive && (
                                                 <span className="px-2 py-0.5 text-xs bg-gray-200 text-gray-600 rounded">
                                                     Disabled
@@ -360,8 +421,8 @@ export default function APIKeyManager() {
                                         <button
                                             onClick={() => handleToggleActive(keyItem.id, keyItem.isActive)}
                                             className={`p-2 rounded-lg transition-colors ${keyItem.isActive
-                                                    ? 'text-green-600 hover:bg-green-50'
-                                                    : 'text-gray-400 hover:bg-gray-100'
+                                                ? 'text-green-600 hover:bg-green-50'
+                                                : 'text-gray-400 hover:bg-gray-100'
                                                 }`}
                                             title={keyItem.isActive ? "Disable" : "Enable"}
                                         >

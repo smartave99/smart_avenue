@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Download, ShoppingBag, Clock, Tag } from "lucide-react";
+import { Download, ShoppingBag, Clock, Tag, Zap, ArrowRight } from "lucide-react";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { Offer } from "@/app/actions";
 
@@ -11,54 +11,89 @@ export default function OffersList({ offers }: { offers: Offer[] }) {
 
     return (
         <>
-            {/* Digital Catalog Banner */}
-            <div className="bg-brand-dark rounded-3xl p-8 md:p-12 mb-16 relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2" />
+            {/* Digital Catalog Banner - Tech Style */}
+            <div className="bg-brand-dark rounded-3xl p-8 md:p-12 mb-16 relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-blue/20 to-brand-lime/20 opacity-30 group-hover:opacity-40 transition-opacity" />
+                {/* Animated Grid Background */}
+                <div className="absolute inset-0 opacity-[0.1]"
+                    style={{
+                        backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                        backgroundSize: "20px 20px"
+                    }}
+                />
 
                 <div className="relative z-10 text-center md:text-left">
-                    <h2 className="text-3xl font-serif font-bold mb-4">Download Monthly Catalog</h2>
-                    <p className="text-gray-300 max-w-md mb-6">
-                        View our complete collection of new arrivals, seasonal specials, and exclusive member-only deals in one place.
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-lime/20 border border-brand-lime/30 text-brand-lime text-xs font-bold tracking-wide mb-4 uppercase">
+                        <Zap className="w-3 h-3" /> New Edition Available
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Smart Catalog <span className="text-brand-lime">Vol. 4</span></h2>
+                    <p className="text-slate-300 max-w-md mb-8 leading-relaxed">
+                        Access our complete digital inventory, exclusive bundles, and member pricing.
                     </p>
-                    <button className="px-6 py-3 bg-brand-gold text-brand-dark rounded-full font-bold hover:bg-yellow-500 transition-colors flex items-center gap-2 mx-auto md:mx-0">
-                        <Download className="w-5 h-5" /> Download PDF (4.5 MB)
+                    <button className="px-8 py-4 bg-brand-lime text-brand-dark rounded-full font-bold hover:bg-lime-400 transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(132,204,22,0.3)] hover:shadow-[0_0_30px_rgba(132,204,22,0.5)]">
+                        <Download className="w-5 h-5" /> Download PDF <span className="opacity-60 text-xs font-normal ml-1">4.5 MB</span>
                     </button>
                 </div>
 
-                <div className="relative z-10 w-48 h-64 bg-white/10 backdrop-blur-md rounded-lg rotate-3 border border-white/20 shadow-xl flex items-center justify-center">
-                    <span className="text-white/50 font-serif text-2xl rotate-90 whitespace-nowrap">Catalog Preview</span>
+                {/* Abstract Visual */}
+                <div className="relative z-10 hidden md:block">
+                    <div className="w-64 h-80 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transform rotate-6 hover:rotate-3 transition-transform duration-500 shadow-2xl flex flex-col">
+                        <div className="w-full h-4 bg-white/10 rounded-full mb-4" />
+                        <div className="w-2/3 h-4 bg-white/10 rounded-full mb-8" />
+                        <div className="flex-1 bg-gradient-to-br from-brand-blue/20 to-transparent rounded-xl flex items-center justify-center">
+                            <span className="text-6xl font-black text-white/5">04</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Offers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {offers.length === 0 ? (
-                    <div className="col-span-full text-center py-12 text-gray-500">
-                        No active offers at the moment. Check back soon!
+                    <div className="col-span-full py-20 text-center">
+                        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-400">
+                            <Tag className="w-10 h-10" />
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">No Active Offers</h3>
+                        <p className="text-slate-500">Check back later for new exclusive deals.</p>
                     </div>
                 ) : (
                     offers.map((offer, index) => (
                         <motion.div
                             key={offer.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className={`bg-green-50 border-green-100 border-2 rounded-2xl p-6 flex items-start gap-4 hover:shadow-lg transition-shadow cursor-pointer`}
+                            className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-brand-lime/30 group"
                         >
-                            <div className={`p-3 bg-white rounded-xl shadow-sm text-green-600`}>
-                                <Tag className="w-6 h-6" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="text-xl font-bold text-gray-900">{offer.title}</h3>
-                                    <span className={`px-3 py-1 bg-white rounded-full text-sm font-bold shadow-sm text-green-600`}>
+                            <div className="p-8">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 bg-brand-blue/10 rounded-2xl text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                        <Tag className="w-6 h-6" />
+                                    </div>
+                                    <span className="px-4 py-2 bg-brand-lime/10 text-brand-dark rounded-full text-sm font-bold border border-brand-lime/20 group-hover:bg-brand-lime group-hover:text-brand-dark transition-colors">
                                         {offer.discount}
                                     </span>
                                 </div>
-                                <p className="text-gray-600 mb-4">{offer.description}</p>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <Clock className="w-4 h-4" />
-                                    <span>Created: {new Date(offer.createdAt).toLocaleDateString()}</span>
+
+                                <h3 className="text-2xl font-bold text-brand-dark mb-3 group-hover:text-brand-blue transition-colors">
+                                    {offer.title}
+                                </h3>
+
+                                <p className="text-slate-500 mb-8 line-clamp-3 leading-relaxed">
+                                    {offer.description}
+                                </p>
+
+                                <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                                    <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                                        <Clock className="w-3 h-3" />
+                                        <span>{new Date(offer.createdAt).toLocaleDateString()}</span>
+                                    </div>
+
+                                    <button className="text-brand-dark font-bold text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        Details <ArrowRight className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         </motion.div>
@@ -66,16 +101,16 @@ export default function OffersList({ offers }: { offers: Offer[] }) {
                 )}
             </div>
 
-            <div className="mt-12 text-center">
-                <p className="text-gray-500 mb-4">Want to order directly?</p>
+            <div className="mt-24 text-center">
+                <p className="text-slate-400 mb-6 font-medium">Prefer instant assistance?</p>
                 {contact.whatsappUrl && (
                     <a
                         href={contact.whatsappUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-8 py-3 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-600/20 inline-flex items-center gap-2"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-[#25D366] text-white rounded-full font-bold hover:bg-[#128C7E] transition-colors shadow-lg shadow-[#25D366]/30 hover:scale-105 transform duration-300"
                     >
-                        <ShoppingBag className="w-5 h-5" /> Order via WhatsApp
+                        <ShoppingBag className="w-5 h-5" /> Chat on WhatsApp
                     </a>
                 )}
             </div>
