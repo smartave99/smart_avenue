@@ -1,31 +1,20 @@
 
-import fs from 'fs';
+
 import path from 'path';
 import type { Product } from '../src/app/actions';
 
-// Load environment variables from .env.local manually
-try {
-    const envPath = path.resolve(process.cwd(), '.env.local');
-    if (fs.existsSync(envPath)) {
-        const envConfig = fs.readFileSync(envPath, 'utf8');
-        envConfig.split('\n').forEach(line => {
-            const match = line.match(/^([^=]+)=(.*)$/);
-            if (match) {
-                const key = match[1].trim();
-                const value = match[2].trim().replace(/^["']|["']$/g, '');
-                process.env[key] = value;
-            }
-        });
-        console.log("Loaded .env.local properties:", Object.keys(process.env).filter(k => k.includes('KEY')));
+import 'dotenv/config';
 
-        if (!process.env.GROQ_API_KEY) {
-            console.error("GROQ_API_KEY not found in process.env after loading! Make sure .env.local exists.");
-        } else {
-            console.log("GROQ_API_KEY is properly set in process.env");
-        }
-    }
-} catch (e) {
-    console.warn("Failed to load .env.local", e);
+// Load environment variables from .env.local
+import dotenv from 'dotenv';
+
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+
+if (!process.env.GROQ_API_KEY) {
+    console.warn("GROQ_API_KEY not found in process.env. Ensure .env.local has it.");
+} else {
+    console.log("GROQ_API_KEY is properly set.");
 }
 
 async function main() {
