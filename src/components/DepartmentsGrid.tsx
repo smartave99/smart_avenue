@@ -26,7 +26,7 @@ export default function DepartmentsGrid({ departments }: { departments: Departme
                             key={dept.id}
                             layoutId={dept.id}
                             onClick={() => setSelectedId(dept.id)}
-                            className="group relative cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow h-[300px]"
+                            className="group relative cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 h-[300px] border border-transparent hover:border-brand-gold/30"
                         >
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
@@ -41,7 +41,7 @@ export default function DepartmentsGrid({ departments }: { departments: Departme
                                             <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                                                 <Icon className="w-6 h-6" />
                                             </div>
-                                            <h2 className="text-2xl font-bold">{dept.title}</h2>
+                                            <h2 className="text-2xl font-bold font-serif">{dept.title}</h2>
                                         </div>
                                         <p className="text-gray-200 opacity-90">{dept.description}</p>
                                     </div>

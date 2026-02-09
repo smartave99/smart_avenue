@@ -13,7 +13,7 @@ import {
 import { Product, Category } from "@/app/actions";
 
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.0-flash";
 const MAX_RETRIES = 3;
 
 interface GeminiResponse {

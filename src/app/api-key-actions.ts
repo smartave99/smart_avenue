@@ -10,7 +10,7 @@ import { getAdminDb, admin } from "@/lib/firebase-admin";
 import { getAPIKeyManager, resetAPIKeyManager } from "@/lib/api-key-manager";
 
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.0-flash";
 
 // ==================== API KEY TYPES ====================
 
