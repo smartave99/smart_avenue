@@ -2,7 +2,8 @@ import { getProduct, getReviews } from "@/app/actions";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Truck, ShieldCheck, Zap } from "lucide-react";
+import { ChevronLeft, Truck, ShieldCheck, Zap, Film, Camera } from "lucide-react";
+import ImageGallery from "@/components/ImageGallery";
 import { Reviews } from "@/components/Reviews";
 
 export const dynamic = "force-dynamic";
@@ -38,36 +39,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
                     {/* Image Gallery */}
                     <div className="space-y-4">
-                        <div className="relative aspect-square bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-                            {product.imageUrl ? (
-                                <Image
-                                    src={product.imageUrl}
-                                    alt={product.name}
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />
-                            ) : (
-                                <div className="flex items-center justify-center h-full bg-slate-100 text-slate-300">
-                                    No Image Available
-                                </div>
-                            )}
-
-                            {/* Badges */}
-                            <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                {discount > 0 && (
-                                    <span className="bg-brand-lime text-brand-dark px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                                        {discount}% OFF
-                                    </span>
-                                )}
-                                {product.featured && (
-                                    <span className="bg-brand-dark text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                                        <Zap className="w-3 h-3 fill-current" /> Hot
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        {/* Thumbnails can go here if we have multiple images */}
+                        <ImageGallery
+                            images={product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : [])}
+                            videoUrl={product.videoUrl}
+                            productName={product.name}
+                            discount={discount}
+                            isFeatured={product.featured}
+                        />
                     </div>
 
                     {/* Product Info */}
