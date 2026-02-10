@@ -16,7 +16,10 @@ import {
     Phone,
     Megaphone,
     Bot,
-    Palette
+    Palette,
+    Star,
+    Zap,
+    MousePointerClick
 } from "lucide-react";
 import Link from "next/link";
 
@@ -26,8 +29,11 @@ const navItems = [
     { name: "Offers", href: "/admin/content/offers", icon: Megaphone },
     { name: "Categories", href: "/admin/content/categories", icon: Tag },
     { name: "Gallery", href: "/admin/content/gallery", icon: Image },
-    { name: "Reviews", href: "/admin/reviews", icon: Megaphone }, // Using Megaphone as placeholder or similar
+    { name: "Reviews", href: "/admin/reviews", icon: Megaphone },
     { name: "Hero Section", href: "/admin/content/hero", icon: LayoutDashboard },
+    { name: "Highlights", href: "/admin/content/highlights", icon: Star },
+    { name: "Features", href: "/admin/content/features", icon: Zap },
+    { name: "CTA Section", href: "/admin/content/cta", icon: MousePointerClick },
     { name: "Staff Management", href: "/admin/staff", icon: Users },
     { name: "Station Info", href: "/admin/content/contact", icon: Phone },
     { name: "Club Tiers", href: "/admin/content/club", icon: Users },
