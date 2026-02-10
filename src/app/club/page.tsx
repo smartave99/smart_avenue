@@ -34,7 +34,7 @@ export default async function ClubPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {[
                             { icon: Crown, label: "VIP Access", desc: "Early access to sales" },
-                            { icon: Truck, label: "Free Delivery", desc: "On orders above ₹500" },
+                            { icon: Truck, label: "Priority Checkout", desc: "Skip the queue" },
                             { icon: Gift, label: "Birthday Treats", desc: "Special surprises" },
                             { icon: CreditCard, label: "Smart Points", desc: "Earn on every spend" },
                         ].map((item, i) => (
