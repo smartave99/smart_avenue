@@ -3,14 +3,14 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, Globe, ShieldCheck, Users, Zap, TrendingUp, MapPin, Phone, Mail, Clock, Check, Star, Heart, Award } from "lucide-react";
 import Image from "next/image";
-import { AboutPageContent } from "@/app/actions";
+import { AboutPageContent, ContactContent } from "@/app/actions";
 
 // Map string icon names to Lucide icons
 const iconMap: Record<string, React.ElementType> = {
     CheckCircle2, Globe, ShieldCheck, Users, Zap, TrendingUp, MapPin, Phone, Mail, Clock, Check, Star, Heart, Award
 };
 
-export default function AboutContent({ content }: { content: AboutPageContent | null }) {
+export default function AboutContent({ content, contact }: { content: AboutPageContent | null, contact: ContactContent | null }) {
     // Default fallback content
     const data = content || {
         heroTitle: "Smart Avenue",
@@ -187,10 +187,8 @@ export default function AboutContent({ content }: { content: AboutPageContent | 
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-lg mb-1 text-brand-dark">Address</h4>
-                                    <p className="text-slate-600 leading-relaxed">
-                                        Smart Avenue Retail Complex,<br />
-                                        Level 3, P&M Mall, Patliputra Colony,<br />
-                                        Patna, Bihar 800013
+                                    <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                                        {contact?.address || "Smart Avenue Retail Complex,\nLevel 3, P&M Mall, Patliputra Colony,\nPatna, Bihar 800013"}
                                     </p>
                                 </div>
                             </div>
@@ -201,8 +199,7 @@ export default function AboutContent({ content }: { content: AboutPageContent | 
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-lg mb-1 text-brand-dark">Phone</h4>
-                                    <p className="text-slate-600">+91 612 2xxx xxx (Store)</p>
-                                    <p className="text-slate-600">+91 98xxx xxxxx (Support)</p>
+                                    <p className="text-slate-600">{contact?.phone || "+91 612 2xxx xxx"}</p>
                                 </div>
                             </div>
 
@@ -212,8 +209,7 @@ export default function AboutContent({ content }: { content: AboutPageContent | 
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-lg mb-1 text-brand-dark">Opening Hours</h4>
-                                    <p className="text-slate-600">Monday - Sunday</p>
-                                    <p className="font-semibold text-brand-lime">10:00 AM - 10:00 PM</p>
+                                    <p className="text-slate-600 whitespace-pre-line">{contact?.storeHours || "Monday - Sunday\n10:00 AM - 10:00 PM"}</p>
                                 </div>
                             </div>
 
@@ -223,8 +219,7 @@ export default function AboutContent({ content }: { content: AboutPageContent | 
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-lg mb-1 text-brand-dark">Email</h4>
-                                    <p className="text-slate-600">support@smartavenue.com</p>
-                                    <p className="text-slate-600">careers@smartavenue.com</p>
+                                    <p className="text-slate-600">{contact?.email || "support@smartavenue.com"}</p>
                                 </div>
                             </div>
                         </div>
@@ -232,7 +227,7 @@ export default function AboutContent({ content }: { content: AboutPageContent | 
                         {/* Map Embed */}
                         <div className="h-full min-h-[400px] w-full bg-slate-200 rounded-3xl overflow-hidden shadow-lg border border-slate-200 relative">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115133.01016839848!2d85.07300225139396!3d25.608020764124317!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f29937c52d4f05%3A0x831218527871363d!2sPatna%2C%20Bihar!5e0!3m2!1sen!2sin!4v1717758362706!5m2!1sen!2sin"
+                                src={contact?.mapEmbed || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115133.01016839848!2d85.07300225139396!3d25.608020764124317!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f29937c52d4f05%3A0x831218527871363d!2sPatna%2C%20Bihar!5e0!3m2!1sen!2sin!4v1717758362706!5m2!1sen!2sin"}
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}

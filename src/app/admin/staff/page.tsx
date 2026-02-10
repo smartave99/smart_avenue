@@ -20,7 +20,6 @@ import Link from "next/link";
 const sections = [
     { id: "hero", label: "Hero Section" },
     { id: "offers", label: "Offers" },
-    { id: "gallery", label: "Gallery" },
     { id: "contact", label: "Contact Info" },
     { id: "departments", label: "Departments" },
 ];
@@ -187,8 +186,8 @@ export default function StaffManagement() {
                                                 type="button"
                                                 onClick={() => togglePermission(section.id)}
                                                 className={`px-3 py-1 rounded-full text-sm transition-colors ${newStaff.permissions.includes(section.id)
-                                                        ? "bg-amber-500 text-white"
-                                                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                                    ? "bg-amber-500 text-white"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                                     }`}
                                             >
                                                 {section.label}

@@ -26,29 +26,6 @@ export async function getOffers(): Promise<Offer[]> {
     }
 }
 
-// ==================== GALLERY ====================
-
-export interface GalleryImage {
-    id: string;
-    imageUrl: string;
-    storagePath: string;
-    createdAt: Date;
-}
-
-export async function getGalleryImages(): Promise<GalleryImage[]> {
-    try {
-        const snapshot = await getAdminDb().collection("gallery").orderBy("createdAt", "desc").get();
-        return snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: (doc.data().createdAt as admin.firestore.Timestamp)?.toDate() || new Date(),
-        })) as GalleryImage[];
-    } catch (error) {
-        console.error("Error fetching gallery images:", error);
-        return [];
-    }
-}
-
 // ==================== TEST CONNECTION ====================
 
 export async function testFirebaseConnection() {
