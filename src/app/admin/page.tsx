@@ -19,7 +19,8 @@ import {
     Palette,
     Star,
     Zap,
-    MousePointerClick
+    MousePointerClick,
+    MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 
@@ -35,6 +36,7 @@ const navItems = [
     { name: "Features", href: "/admin/content/features", icon: Zap },
     { name: "CTA Section", href: "/admin/content/cta", icon: MousePointerClick },
     { name: "Staff Management", href: "/admin/staff", icon: Users },
+    { name: "Product Requests", href: "/admin/requests", icon: MessageSquare },
     { name: "Station Info", href: "/admin/content/contact", icon: Phone },
     { name: "Club Tiers", href: "/admin/content/club", icon: Users },
     { name: "AI Assistant", href: "/admin/api-keys", icon: Bot },

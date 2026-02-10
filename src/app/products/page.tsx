@@ -1,14 +1,6 @@
-import { getProducts, getCategories, getOffers, searchProducts } from "@/app/actions";
+import { getProducts, getCategories, getOffers, searchProducts, Product, Category, Offer } from "@/lib/data";
 import Link from "next/link";
-import { Package, Search, ChevronRight, Zap, ArrowLeft, Tag } from "lucide-react";
-
-// ... (lines 4-103 remain unchanged, effectively handled by context matching or I can just target specific lines)
-
-// ...
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
-                        <p className="text-gray-500 max-w-sm mx-auto">
-                            We couldn&apos;t find any products matching your criteria. Try adjusting your filters or search term.
-                        </p>
+import { Package, Search, ChevronRight, Zap } from "lucide-react";
 import Image from "next/image";
 
 export const dynamic = "force-dynamic";
@@ -20,34 +12,35 @@ export default async function ProductsPage({
     searchParams: Promise<{ category?: string; subcategory?: string; search?: string }>
 }) {
     const params = await searchParams;
-
     const [products, categories, offers] = await Promise.all([
         params.search
-            ? searchProducts(decodeURIComponent(params.search), params.category, params.subcategory) // Use searchProducts for text search
-            : getProducts(params.category), // Use getProducts for category filter
+            ? searchProducts(params.search, params.category, params.subcategory)
+            : getProducts(),
         getCategories(),
         getOffers()
     ]);
 
-    const mainCategories = categories.filter(c => !c.parentId);
-    const getSubcategories = (parentId: string) => categories.filter(c => c.parentId === parentId);
-    const getCategoryName = (id: string) => categories.find(c => c.id === id)?.name || "Unknown";
-    const getOffer = (id?: string) => id ? offers.find(o => o.id === id) : null;
+    const mainCategories = categories.filter((c: Category) => !c.parentId);
+    const getSubcategories = (parentId: string) => categories.filter((c: Category) => c.parentId === parentId);
+    const getCategoryName = (id: string) => categories.find((c: Category) => c.id === id)?.name || "Unknown";
+    const getOffer = (id?: string) => id ? offers.find((o: Offer) => o.id === id) : null;
 
-    let filteredProducts = products;
+    // Filter products
+    let filteredProducts = params.search
+        ? products
+        : products.filter((p: Product) => p.available);
 
-    // Client-side filtering if needed (but getProducts/searchProducts handle most)
-    if (params.subcategory && !params.search) {
-        filteredProducts = filteredProducts.filter(p => p.subcategoryId === params.subcategory);
+    if (!params.search) {
+        if (params.category) {
+            filteredProducts = filteredProducts.filter((p: Product) =>
+                p.categoryId === params.category || p.subcategoryId === params.category
+            );
+        }
+        if (params.subcategory) {
+            filteredProducts = filteredProducts.filter((p: Product) => p.subcategoryId === params.subcategory);
+        }
     }
 
-    // Only show available products unless searching? (Usually we want to show available only for customers)
-    // The searchProducts/getProducts should handle this based on arguments, but let's enforce client side specific logic if needed.
-    // getProducts default filter is undefined for available (admin view might use it differently), but for public page we likely want available=true
-    // However, our getProducts in actions.ts has `available` param.
-    // The above call `getProducts(params.category)` uses default `available=undefined`. 
-    // Let's filter here to be safe for public view.
-    filteredProducts = filteredProducts.filter(p => p.available);
 
 
     return (
