@@ -565,8 +565,10 @@ export async function searchProducts(
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
+    console.log("Fetching product with ID:", id);
     try {
         const doc = await getAdminDb().collection("products").doc(id).get();
+        console.log("Product found:", doc.exists);
         if (doc.exists) {
             const data = doc.data();
             return {
@@ -617,7 +619,7 @@ export async function updateProduct(id: string, data: any) {
         revalidatePath("/");
         revalidatePath("/products");
         revalidatePath("/admin/content/products");
-        revalidatePath(`/product/${id}`);
+        revalidatePath(`/products/${id}`);
 
         return { success: true };
     } catch (error: unknown) {
@@ -651,7 +653,7 @@ export async function toggleProductAvailability(id: string, available: boolean) 
         revalidatePath("/");
         revalidatePath("/products");
         revalidatePath("/admin/content/products");
-        revalidatePath(`/product/${id}`);
+        revalidatePath(`/products/${id}`);
 
         return { success: true };
     } catch (error: unknown) {
