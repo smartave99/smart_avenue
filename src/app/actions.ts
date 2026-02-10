@@ -452,6 +452,7 @@ export interface Product {
     subcategoryId?: string;
     imageUrl: string;
     images: string[];
+    videoUrl?: string | null;
     available: boolean;
     featured: boolean;
     offerId?: string;

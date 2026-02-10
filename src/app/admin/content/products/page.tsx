@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import ImageUpload from "@/components/ImageUpload";
+import CloudinaryUpload from "@/components/CloudinaryUpload";
 
 export default function ProductsManager() {
     const { user, loading: authLoading } = useAuth();
@@ -61,6 +61,7 @@ export default function ProductsManager() {
         subcategoryId: string;
         imageUrl: string; // Keep for backward compatibility/single main image
         images: string[]; // New: support multiple images
+        videoUrl: string | null;
         available: boolean;
         featured: boolean;
         offerId: string;
@@ -74,6 +75,7 @@ export default function ProductsManager() {
         subcategoryId: "",
         imageUrl: "", // Main image (first match in images array)
         images: [],
+        videoUrl: null,
         available: true,
         featured: false,
         offerId: "",
@@ -128,6 +130,7 @@ export default function ProductsManager() {
             subcategoryId: "",
             imageUrl: "",
             images: [],
+            videoUrl: null,
             available: true,
             featured: false,
             offerId: "",
@@ -174,6 +177,7 @@ export default function ProductsManager() {
             subcategoryId: formData.subcategoryId || undefined,
             imageUrl: formData.images.length > 0 ? formData.images[0] : formData.imageUrl,
             images: formData.images.length > 0 ? formData.images : (formData.imageUrl ? [formData.imageUrl] : []),
+            videoUrl: formData.videoUrl,
             available: formData.available,
             featured: formData.featured,
             offerId: formData.offerId || undefined,
@@ -205,6 +209,7 @@ export default function ProductsManager() {
             subcategoryId: product.subcategoryId || "",
             imageUrl: product.imageUrl,
             images: product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : []),
+            videoUrl: product.videoUrl || null,
             available: product.available,
             featured: product.featured,
             offerId: product.offerId || "",
@@ -330,45 +335,72 @@ export default function ProductsManager() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
-                                    <ImageUpload
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Media (Images & Video)</label>
+                                    <CloudinaryUpload
                                         folder="products"
                                         multiple
                                         currentImages={formData.images}
-                                        onUpload={(files) => setFormData(prev => ({
-                                            ...prev,
-                                            images: [...prev.images, ...files.map(f => f.url)],
-                                            imageUrl: prev.imageUrl || files[0]?.url || ""
-                                        }))}
-                                        onRemove={(index) => removeImage(index)}
+                                        currentVideo={formData.videoUrl}
+                                        onUpload={(files) => {
+                                            const newImages = files.filter(f => f.resourceType === "image").map(f => f.url);
+                                            const newVideo = files.find(f => f.resourceType === "video")?.url || formData.videoUrl;
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                images: [...prev.images, ...newImages],
+                                                imageUrl: prev.imageUrl || newImages[0] || "",
+                                                videoUrl: newVideo
+                                            }));
+                                        }}
+                                        onRemoveImage={(index) => removeImage(index)}
+                                        onRemoveVideo={() => setFormData(prev => ({ ...prev, videoUrl: null }))}
                                     />
-                                    <div className="mt-4 flex gap-2">
-                                        <input
-                                            type="url"
-                                            placeholder="Or paste image URL here..."
-                                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-amber-500"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    addImageUrl(e.currentTarget.value);
-                                                    e.currentTarget.value = '';
-                                                }
-                                            }}
-                                            id="url-input"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                const input = document.getElementById('url-input') as HTMLInputElement;
-                                                if (input) {
-                                                    addImageUrl(input.value);
-                                                    input.value = '';
-                                                }
-                                            }}
-                                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
-                                        >
-                                            Add Link
-                                        </button>
+                                    <div className="mt-4 flex flex-col gap-2">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="url"
+                                                placeholder="Or paste image URL here..."
+                                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-amber-500"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        addImageUrl(e.currentTarget.value);
+                                                        e.currentTarget.value = '';
+                                                    }
+                                                }}
+                                                id="url-input"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const input = document.getElementById('url-input') as HTMLInputElement;
+                                                    if (input) {
+                                                        addImageUrl(input.value);
+                                                        input.value = '';
+                                                    }
+                                                }}
+                                                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                                            >
+                                                Add Image Link
+                                            </button>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="url"
+                                                placeholder="Or paste video URL here..."
+                                                value={formData.videoUrl || ""}
+                                                onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value || null })}
+                                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-amber-500"
+                                            />
+                                            {formData.videoUrl && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, videoUrl: null })}
+                                                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-colors"
+                                                >
+                                                    Clear Video
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -583,6 +615,11 @@ export default function ProductsManager() {
                                                     <span className="font-bold text-amber-600">₹{product.price}</span>
                                                     {product.originalPrice && (
                                                         <span className="text-sm text-gray-400 line-through">₹{product.originalPrice}</span>
+                                                    )}
+                                                    {product.videoUrl && (
+                                                        <span className="flex items-center gap-1 text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded ml-2">
+                                                            <Film className="w-3 h-3" /> Video
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>
