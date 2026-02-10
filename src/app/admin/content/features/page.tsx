@@ -182,8 +182,10 @@ export default function FeaturesEditor() {
                                                     ))}
                                                 </select>
                                                 <div className="mt-2 flex justify-center text-brand-blue">
-                                                    {/* @ts-ignore */}
-                                                    {Icons[item.icon] && <Icons.default name={item.icon} className="w-6 h-6 text-gray-600" />}
+                                                    {(() => {
+                                                        const IconComponent = Icons[item.icon as keyof typeof Icons] as React.ElementType;
+                                                        return IconComponent ? <IconComponent className="w-6 h-6 text-gray-600" /> : null;
+                                                    })()}
                                                 </div>
                                             </div>
                                             <div className="md:col-span-4">
