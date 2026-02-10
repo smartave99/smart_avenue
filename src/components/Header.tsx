@@ -6,8 +6,14 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, ShoppingBag } from "lucide-react";
-import { NAV_LINKS } from "@/lib/data";
 import { useSiteConfig } from "@/context/SiteConfigContext";
+
+const NAV_LINKS = [
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/products" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+];
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
