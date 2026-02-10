@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import {
     LayoutDashboard,
+    Home,
     ShoppingBag,
     Megaphone,
     Tag,
@@ -51,6 +52,7 @@ const navGroups = [
     {
         title: "Storefront",
         items: [
+            { name: "Homepage", href: "/admin/storefront", icon: Home },
             { name: "Hero Section", href: "/admin/content/hero", icon: LayoutDashboard },
             { name: "Highlights", href: "/admin/content/highlights", icon: Star },
             { name: "Features", href: "/admin/content/features", icon: Zap },

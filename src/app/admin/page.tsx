@@ -7,6 +7,7 @@ import { getDashboardStats } from "@/app/actions";
 import {
     Megaphone,
     ShoppingBag,
+    Home,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -96,6 +97,18 @@ export default function AdminDashboard() {
                         <p className="text-3xl font-serif text-brand-green">{stats.productsCount}</p>
                         <p className="text-xs text-gray-500 mt-1">In catalog</p>
                     </div>
+
+                    {/* Storefront Management Card */}
+                    <Link href="/admin/storefront" className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:border-brand-gold/50 group">
+                        <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2 group-hover:text-brand-green transition-colors">
+                            <Home className="w-4 h-4 text-brand-lime" />
+                            Homepage
+                        </h4>
+                        <p className="text-sm text-gray-500 mb-4">Manage hero, highlights, features, and CTA sections.</p>
+                        <span className="text-brand-gold text-xs font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+                            Manage Storefront <ChevronRight className="w-3 h-3" />
+                        </span>
+                    </Link>
 
                 </div>
             </div>
