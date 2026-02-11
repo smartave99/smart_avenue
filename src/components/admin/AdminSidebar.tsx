@@ -52,18 +52,25 @@ const navGroups = [
     {
         title: "Storefront",
         items: [
+            // Global Settings
+            { name: "Branding", href: "/admin/content/branding", icon: Settings },
+            { name: "Appearance", href: "/admin/appearance", icon: Palette },
+            { name: "Station Info", href: "/admin/content/contact", icon: Phone },
+            
+            // Core Pages
             { name: "Homepage", href: "/admin/storefront", icon: Home },
+            { name: "About Us Page", href: "/admin/content/about", icon: Users },
+            
+            // Page Configurations
+            { name: "Products Page", href: "/admin/content/products-page", icon: ShoppingBag },
+            { name: "Offers Page", href: "/admin/content/offers-page", icon: Megaphone },
+            { name: "Departments Page", href: "/admin/content/departments-page", icon: Tag },
+            
+            // Homepage Components
             { name: "Hero Section", href: "/admin/content/hero", icon: LayoutDashboard },
             { name: "Highlights", href: "/admin/content/highlights", icon: Star },
             { name: "Features", href: "/admin/content/features", icon: Zap },
             { name: "CTA Section", href: "/admin/content/cta", icon: MousePointerClick },
-            { name: "Products Page", href: "/admin/content/products-page", icon: ShoppingBag },
-            { name: "Offers Page", href: "/admin/content/offers-page", icon: Megaphone },
-            { name: "Departments Page", href: "/admin/content/departments-page", icon: Tag },
-            { name: "About Us Page", href: "/admin/content/about", icon: Users },
-            { name: "Station Info", href: "/admin/content/contact", icon: Phone },
-            { name: "Branding", href: "/admin/content/branding", icon: Settings },
-            { name: "Appearance", href: "/admin/appearance", icon: Palette },
         ]
     },
     {
@@ -129,9 +136,14 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }: { mobileOpen
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
                     {navGroups.map((group) => {
-                        // Filter items based on role
+                        // Filter entire groups based on role
+                        if (role !== "Admin" && group.title === "System") {
+                            return null;
+                        }
+
+                        // Filter items based on role within groups
                         const filteredItems = group.items.filter(item => {
-                            if (role !== "Admin" && (item.name === "Staff Management" || item.name === "Branding")) {
+                            if (role !== "Admin" && (item.name === "Branding" || item.name === "Appearance" || item.name === "Station Info")) {
                                 return false;
                             }
                             return true;

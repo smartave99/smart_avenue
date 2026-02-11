@@ -408,6 +408,8 @@ export async function createCategory(name: string, parentId: string | null = nul
         return { success: true, id: docRef.id };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().delete(CacheKeys.categories());
     }
 }
 
@@ -424,6 +426,8 @@ export async function updateCategory(id: string, data: Partial<Category>) {
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().delete(CacheKeys.categories());
     }
 }
 
@@ -437,6 +441,8 @@ export async function deleteCategory(id: string) {
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().delete(CacheKeys.categories());
     }
 }
 
@@ -602,6 +608,9 @@ export async function createProduct(data: any) {
         return { success: true, id: docRef.id };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().clearPrefix("products");
+        getSearchCache().clearPrefix("query");
     }
 }
 
@@ -622,6 +631,9 @@ export async function updateProduct(id: string, data: any) {
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().clearPrefix("products");
+        getSearchCache().clearPrefix("query");
     }
 }
 
@@ -637,6 +649,9 @@ export async function deleteProduct(id: string) {
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().clearPrefix("products");
+        getSearchCache().clearPrefix("query");
     }
 }
 
@@ -656,6 +671,9 @@ export async function toggleProductAvailability(id: string, available: boolean) 
         return { success: true };
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    } finally {
+        getSearchCache().clearPrefix("products");
+        getSearchCache().clearPrefix("query");
     }
 }
 

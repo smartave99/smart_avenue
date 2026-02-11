@@ -40,10 +40,14 @@ export default function StaffManagement() {
     });
 
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push("/admin/login");
+        if (!authLoading) {
+            if (!user) {
+                router.push("/admin/login");
+            } else if (role !== "Admin") {
+                router.push("/admin");
+            }
         }
-    }, [authLoading, user, router]);
+    }, [authLoading, user, role, router]);
 
     useEffect(() => {
         if (user) {
