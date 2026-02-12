@@ -109,7 +109,7 @@ export default function PromotionsPage() {
         });
     };
 
-    const handleUpdateItem = (index: number, field: keyof PromotionItem, value: string | boolean) => {
+    const handleUpdateItem = <K extends keyof PromotionItem>(index: number, field: K, value: PromotionItem[K]) => {
         if (!config) return;
         const newItems = [...config.promotions.items];
         newItems[index] = { ...newItems[index], [field]: value };
