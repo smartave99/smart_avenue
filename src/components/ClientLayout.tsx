@@ -9,6 +9,8 @@ import AssistantChat from "./assistant/AssistantChat";
 
 import { SiteConfig } from "@/types/site-config";
 
+import PwaInstallPrompt from "./PwaInstallPrompt";
+
 export default function ClientLayout({
     children,
     initialConfig,
@@ -23,6 +25,7 @@ export default function ClientLayout({
                     <Header />
                     {children}
                     <AssistantChat />
+                    <PwaInstallPrompt />
                     <Footer />
                 </SiteConfigProvider>
             </AuthProvider>
