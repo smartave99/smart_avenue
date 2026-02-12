@@ -11,7 +11,7 @@ cloudinary.config({
 export async function uploadToCloudinary(
     fileUri: string,
     folder: string,
-    resourceType: "image" | "video" = "image"
+    resourceType: "image" | "video" | "raw" | "auto" = "image"
 ) {
     try {
         const result = await cloudinary.uploader.upload(fileUri, {

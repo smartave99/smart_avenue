@@ -15,7 +15,7 @@ import {
     Link as LinkIcon
 } from "lucide-react";
 import Link from "next/link";
-import ImageUpload from "@/components/ImageUpload";
+import CloudinaryUpload from "@/components/CloudinaryUpload";
 import Image from "next/image";
 
 export default function PromotionsPage() {
@@ -191,11 +191,11 @@ export default function PromotionsPage() {
                                 <Plus className="w-5 h-5 text-amber-500" />
                                 Add New Posters
                             </h3>
-                            <ImageUpload
+                            <CloudinaryUpload
                                 folder="promotions"
                                 multiple={true}
                                 onUpload={handleAddImages}
-                                onRemove={() => { }} // Not used here as we manage list below
+                                onRemoveImage={() => { }} // Not used here as we manage list below
                             />
                         </div>
 

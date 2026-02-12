@@ -8,7 +8,7 @@ import { SiteConfig } from "@/types/site-config";
 import { ArrowLeft, Save, Loader2, Upload } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { uploadFile } from "@/app/actions/upload";
+import { uploadToCloudinary } from "@/app/cloudinary-actions";
 
 export default function AppearancePage() {
     const { user, loading: authLoading } = useAuth();
@@ -55,11 +55,16 @@ export default function AppearancePage() {
     const handleImageUpload = async (file: File, path: string, field: "hero.backgroundImageUrl" | "branding.logoUrl") => {
         setUploading(true);
         try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("folder", path);
+            // Convert file to base64 for server action
+            const reader = new FileReader();
+            const filePromise = new Promise<string>((resolve, reject) => {
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+            });
+            reader.readAsDataURL(file);
+            const base64File = await filePromise;
 
-            const result = await uploadFile(formData);
+            const result = await uploadToCloudinary(base64File, path, "image");
 
             if (result.success && result.url) {
                 setConfig(prev => {

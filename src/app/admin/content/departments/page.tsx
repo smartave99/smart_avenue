@@ -5,7 +5,7 @@ import { getDepartments, updateDepartments, DepartmentContent } from "@/app/acti
 import { Plus, Trash2, Save, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-import ImageUpload from "@/components/ImageUpload"; // Assuming this exists or I'll implement a simple input
+import CloudinaryUpload from "@/components/CloudinaryUpload";
 
 export default function DepartmentsAdminPage() {
     const [departments, setDepartments] = useState<DepartmentContent[]>([]);
@@ -156,14 +156,14 @@ export default function DepartmentsAdminPage() {
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Department Image</label>
-                                            <ImageUpload
+                                            <CloudinaryUpload
                                                 onUpload={(files) => {
                                                     if (files[0]) updateDepartment(dept.id, "image", files[0].url);
                                                 }}
                                                 folder="departments"
                                                 maxFiles={1}
                                                 currentImages={dept.image ? [dept.image] : []}
-                                                onRemove={() => updateDepartment(dept.id, "image", "")}
+                                                onRemoveImage={() => updateDepartment(dept.id, "image", "")}
                                             />
                                         </div>
                                     </div>

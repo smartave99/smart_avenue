@@ -15,7 +15,7 @@ import {
     Share2
 } from "lucide-react";
 import Link from "next/link";
-import ImageUpload from "@/components/ImageUpload";
+import CloudinaryUpload from "@/components/CloudinaryUpload";
 
 export default function BrandingEditor() {
     const { user, loading: authLoading } = useAuth();
@@ -105,7 +105,7 @@ export default function BrandingEditor() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
                                     <div className="mb-2">
-                                        <ImageUpload
+                                        <CloudinaryUpload
                                             folder="branding/logo"
                                             multiple={false}
                                             currentImages={config.branding.logoUrl ? [config.branding.logoUrl] : []}
@@ -113,7 +113,7 @@ export default function BrandingEditor() {
                                                 ...config,
                                                 branding: { ...config.branding, logoUrl: files[0].url }
                                             })}
-                                            onRemove={() => setConfig({
+                                            onRemoveImage={() => setConfig({
                                                 ...config,
                                                 branding: { ...config.branding, logoUrl: "" }
                                             })}
@@ -133,7 +133,7 @@ export default function BrandingEditor() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Favicon</label>
                                     <div className="mb-2">
-                                        <ImageUpload
+                                        <CloudinaryUpload
                                             folder="branding/favicon"
                                             multiple={false}
                                             currentImages={config.branding.faviconUrl ? [config.branding.faviconUrl] : []}
@@ -141,7 +141,7 @@ export default function BrandingEditor() {
                                                 ...config,
                                                 branding: { ...config.branding, faviconUrl: files[0].url }
                                             })}
-                                            onRemove={() => setConfig({
+                                            onRemoveImage={() => setConfig({
                                                 ...config,
                                                 branding: { ...config.branding, faviconUrl: "" }
                                             })}
@@ -171,7 +171,7 @@ export default function BrandingEditor() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Poster Image</label>
                                 <div className="mb-2">
-                                    <ImageUpload
+                                    <CloudinaryUpload
                                         folder="branding/poster"
                                         multiple={false}
                                         currentImages={config.branding.posterUrl ? [config.branding.posterUrl] : []}
@@ -179,7 +179,7 @@ export default function BrandingEditor() {
                                             ...config,
                                             branding: { ...config.branding, posterUrl: files[0].url }
                                         })}
-                                        onRemove={() => setConfig({
+                                        onRemoveImage={() => setConfig({
                                             ...config,
                                             branding: { ...config.branding, posterUrl: "" }
                                         })}

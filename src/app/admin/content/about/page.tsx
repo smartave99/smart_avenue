@@ -10,7 +10,7 @@ import {
     ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
-import ImageUpload from "@/components/ImageUpload";
+import CloudinaryUpload from "@/components/CloudinaryUpload";
 
 const defaultContent: AboutPageContent = {
     heroTitle: "Smart Avenue",
@@ -161,12 +161,12 @@ export default function AboutPageEditor() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Vision Image</label>
-                                    <ImageUpload
+                                    <CloudinaryUpload
                                         folder="about"
                                         maxFiles={1}
                                         currentImages={content.visionImage ? [content.visionImage] : []}
                                         onUpload={(files) => files[0] && setContent({ ...content, visionImage: files[0].url })}
-                                        onRemove={() => setContent({ ...content, visionImage: "" })}
+                                        onRemoveImage={() => setContent({ ...content, visionImage: "" })}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
