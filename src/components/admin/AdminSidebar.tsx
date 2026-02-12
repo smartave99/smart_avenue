@@ -52,14 +52,6 @@ const navGroups: NavGroup[] = [
         ]
     },
     {
-        title: "Store Design",
-        items: [
-            { name: "Branding", href: "/admin/content/branding", icon: Settings },
-            { name: "Appearance", href: "/admin/appearance", icon: Palette },
-            { name: "Station Info", href: "/admin/content/contact", icon: Phone },
-        ]
-    },
-    {
         title: "Pages",
         items: [
             {
@@ -105,7 +97,6 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }: { mobileOpen
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
         "Overview": true,
         "Catalog": true,
-        "Store Design": true,
         "Pages": true,
         "Content": false,
         "System": false
@@ -171,14 +162,6 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }: { mobileOpen
 
                         // Filter items based on role within groups
                         // Note: Keeping it simple for now, if more granular permission is needed, logic goes here.
-                        // For "Store Design" logic from previous version:
-                        if (role !== "Admin" && group.title === "Store Design") {
-                            // Assuming only admins can edit design? 
-                            // Previous logic: if(item.name === "Branding" ...) return false.
-                            // Since we grouped them, we can hide the whole group if needed, or filter items.
-                            // Let's assume non-admins shouldn't see Store Design at all if they couldn't see Branding/Appearance.
-                            return null;
-                        }
 
                         return (
                             <div key={group.title}>

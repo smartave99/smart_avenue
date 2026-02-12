@@ -114,6 +114,7 @@ export interface HeroContent {
     tagline: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    learnMoreLink?: string;
     backgroundImage: string;
 }
 
