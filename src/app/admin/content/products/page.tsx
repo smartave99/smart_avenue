@@ -273,6 +273,38 @@ export default function ProductsManager() {
         }
     };
 
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+    const toggleSelection = (id: string) => {
+        const newSelection = new Set(selectedIds);
+        if (newSelection.has(id)) {
+            newSelection.delete(id);
+        } else {
+            newSelection.add(id);
+        }
+        setSelectedIds(newSelection);
+    };
+
+    const toggleAll = () => {
+        if (selectedIds.size === filteredProducts.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredProducts.map(p => p.id)));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) return;
+
+        if (confirm(`Are you sure you want to delete ${selectedIds.size} products? This action cannot be undone.`)) {
+            setLoading(true);
+            await deleteProducts(Array.from(selectedIds));
+            setSelectedIds(new Set());
+            await loadProducts();
+            setLoading(false);
+        }
+    };
+
     const handleToggleAvailability = async (id: string, current: boolean) => {
         // Optimistic update
         setProducts(prev => prev.map(p =>
@@ -332,6 +364,15 @@ export default function ProductsManager() {
                         <FileSpreadsheet className="w-5 h-5" />
                         Import Excel
                     </button>
+                    {selectedIds.size > 0 && (
+                        <button
+                            onClick={handleBulkDelete}
+                            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors animate-in fade-in zoom-in duration-200"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                            Delete Selected ({selectedIds.size})
+                        </button>
+                    )}
                     <button
                         onClick={() => { resetForm(); setShowForm(!showForm); }}
                         className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors"
@@ -621,8 +662,19 @@ export default function ProductsManager() {
 
                 {/* Products list */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-                    <div className="p-4 border-b border-gray-100">
+                    <div className="p-4 border-b border-gray-100 flex items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={filteredProducts.length > 0 && selectedIds.size === filteredProducts.length}
+                            onChange={toggleAll}
+                            className="w-4 h-4 text-amber-500 rounded focus:ring-amber-500 cursor-pointer"
+                        />
                         <h3 className="font-semibold text-gray-800">All Products ({products.length})</h3>
+                        {selectedIds.size > 0 && (
+                            <span className="text-sm text-gray-500 ml-2">
+                                ({selectedIds.size} selected)
+                            </span>
+                        )}
                     </div>
 
                     {loading && products.length === 0 ? (
@@ -645,7 +697,13 @@ export default function ProductsManager() {
                                 {filteredProducts.map((product) => {
                                     const offer = product.offerId ? getOfferName(product.offerId) : null;
                                     return (
-                                        <div key={product.id} className="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                                        <div key={product.id} className={`p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors ${selectedIds.has(product.id) ? 'bg-amber-50' : ''}`}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.has(product.id)}
+                                                onChange={() => toggleSelection(product.id)}
+                                                className="w-4 h-4 text-amber-500 rounded focus:ring-amber-500 cursor-pointer"
+                                            />
                                             <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                                                 {product.imageUrl ? (
                                                     <Image
