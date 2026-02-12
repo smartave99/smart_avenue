@@ -1,8 +1,6 @@
 "use server";
 
 import { getAdminStorage } from "@/lib/firebase-admin";
-import { getAuth } from "firebase-admin/auth"; // We might need to verify the user server-side if not passing token, but let's keep it simple first.
-import { headers } from "next/headers";
 
 // Simple validation to ensure only authorized users can upload.
 // For now, we'll rely on the client-side check or if we have a session cookie.

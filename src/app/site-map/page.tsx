@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, MapPin, Phone, Mail, Facebook, Instagram, Twitter } from "lucide-react";
+import { ChevronRight, MapPin, Phone, Mail } from "lucide-react";
 
 export default function SitemapPage() {
     const sitemapGroups = [
@@ -38,9 +38,7 @@ export default function SitemapPage() {
                         <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
                             Site <span className="text-brand-blue">Map</span>
                         </h1>
-                        <p className="text-lg text-slate-600 mb-12 font-light">
-                            Easy navigation to all parts of our store. Find exactly what you're looking for.
-                        </p>
+                        Easy navigation to all parts of our store. Find exactly what you&apos;re looking for.
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             {sitemapGroups.map((group, idx) => (
