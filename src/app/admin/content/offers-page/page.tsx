@@ -136,6 +136,29 @@ export default function OffersPageEditor() {
                                     This PDF will be available for download on the public offers page.
                                 </p>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Catalogue Title</label>
+                                    <input
+                                        type="text"
+                                        value={content.catalogueTitle || ""}
+                                        onChange={(e) => setContent({ ...content, catalogueTitle: e.target.value })}
+                                        placeholder="Smart Catalog Vol. 4"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Catalogue Subtitle/Description</label>
+                                    <input
+                                        type="text"
+                                        value={content.catalogueSubtitle || ""}
+                                        onChange={(e) => setContent({ ...content, catalogueSubtitle: e.target.value })}
+                                        placeholder="Access our complete digital inventory..."
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-100">

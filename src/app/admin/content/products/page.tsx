@@ -51,7 +51,7 @@ export default function ProductsManager() {
     const [showForm, setShowForm] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [hasMore, setHasMore] = useState(true);
+
 
 
     // ... filters state
@@ -138,12 +138,11 @@ export default function ProductsManager() {
 
         if (searchQuery.trim()) {
             data = await searchProducts(searchQuery, categoryFilter);
-            setHasMore(false); // Search fetches a large batch, don't paginate for now
         } else {
             const limit = 50;
             const startAfter = isLoadMore ? products[products.length - 1]?.id : undefined;
             data = await getProducts(categoryFilter, availableFilter, limit, startAfter);
-            setHasMore(data.length === limit);
+
         }
 
         if (isLoadMore) {

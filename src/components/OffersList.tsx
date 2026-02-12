@@ -5,7 +5,7 @@ import { Download, MessageSquare, Clock, Tag, Zap, ArrowRight } from "lucide-rea
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { Offer } from "@/app/actions";
 
-export default function OffersList({ offers, catalogueUrl }: { offers: Offer[], catalogueUrl?: string }) {
+export default function OffersList({ offers, catalogueUrl, catalogueTitle, catalogueSubtitle }: { offers: Offer[], catalogueUrl?: string, catalogueTitle?: string, catalogueSubtitle?: string }) {
     const { config } = useSiteConfig();
     const { contact } = config;
 
@@ -26,9 +26,11 @@ export default function OffersList({ offers, catalogueUrl }: { offers: Offer[], 
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-lime/20 border border-brand-lime/30 text-brand-lime text-xs font-bold tracking-wide mb-4 uppercase">
                         <Zap className="w-3 h-3" /> New Edition Available
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Smart Catalog <span className="text-brand-lime">Vol. 4</span></h2>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+                        {catalogueTitle || <>Smart Catalog <span className="text-brand-lime">Vol. 4</span></>}
+                    </h2>
                     <p className="text-slate-300 max-w-md mb-8 leading-relaxed">
-                        Access our complete digital inventory, exclusive bundles, and member pricing.
+                        {catalogueSubtitle || "Access our complete digital inventory, exclusive bundles, and member pricing."}
                     </p>
                     {catalogueUrl ? (
                         <a href={catalogueUrl} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-brand-lime text-brand-dark rounded-full font-bold hover:bg-lime-400 transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(132,204,22,0.3)] hover:shadow-[0_0_30px_rgba(132,204,22,0.5)]">

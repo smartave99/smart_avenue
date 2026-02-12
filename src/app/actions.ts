@@ -148,6 +148,7 @@ export interface CTAContent {
     title: string;
     text: string;
     ctaPrimary: string;
+    ctaLink: string;
     ctaSecondary: string;
     backgroundImage: string;
 }
@@ -169,6 +170,8 @@ export interface OffersPageContent {
     heroSubtitle: string;
     heroImage: string;
     catalogueUrl?: string;
+    catalogueTitle?: string;
+    catalogueSubtitle?: string;
 }
 
 export interface DepartmentsPageContent {
