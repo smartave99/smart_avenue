@@ -457,7 +457,37 @@ Output a JSON object:
 }`;
 
     const rawResponse = await callLLM(prompt, provider);
-    return parseJSONFromResponse(rawResponse);
+    const result = parseJSONFromResponse<{
+        action: "request" | "ask_details";
+        response: string;
+        requestData?: {
+            name: string;
+            category?: string;
+            maxBudget?: number | string;
+            specifications?: string[];
+        };
+    }>(rawResponse);
+
+    // Sanitize maxBudget to ensure it's a number
+    if (result.requestData) {
+        if (typeof result.requestData.maxBudget === 'string') {
+            const parsed = parseFloat(result.requestData.maxBudget);
+            result.requestData.maxBudget = isNaN(parsed) ? 0 : parsed;
+        } else if (typeof result.requestData.maxBudget !== 'number') {
+            result.requestData.maxBudget = 0;
+        }
+    }
+
+    return result as {
+        action: "request" | "ask_details";
+        response: string;
+        requestData?: {
+            name: string;
+            category?: string;
+            maxBudget?: number;
+            specifications?: string[];
+        };
+    };
 }
 
 /**
