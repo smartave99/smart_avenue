@@ -69,4 +69,22 @@ export function getAdminDb() {
     return app.firestore();
 }
 
+export function getAdminStorage() {
+    const app = getAdminApp();
+    if (!app) {
+        console.warn("Firebase Admin Storage accessed but app not initialized. Returning mock.");
+        return {
+            bucket: () => ({
+                file: () => ({
+                    save: async () => { },
+                    makePublic: async () => { },
+                    publicUrl: () => "",
+                    name: "mock-file"
+                })
+            })
+        } as unknown as admin.storage.Storage;
+    }
+    return app.storage();
+}
+
 export { admin };

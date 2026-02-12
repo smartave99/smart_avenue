@@ -104,7 +104,7 @@ export default function Footer() {
                     </p>
                     <div className="flex gap-8 text-sm text-slate-500">
                         {footer.bottomLinks.map((link, idx) => (
-                            <Link key={idx} href={link.href} className="hover:text-white transition-colors">
+                            <Link key={idx} href={link.href === "/sitemap" ? "/site-map" : link.href} className="hover:text-white transition-colors">
                                 {link.name}
                             </Link>
                         ))}
