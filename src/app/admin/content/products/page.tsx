@@ -57,7 +57,20 @@ export default function ProductsManager() {
     const [filterCategory, setFilterCategory] = useState<string>("");
     const [filterAvailable, setFilterAvailable] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [hasMore, setHasMore] = useState(false);
+
+    // Dynamic filtering logic
+    const filteredProducts = React.useMemo(() => {
+        return products.filter(product => {
+            const searchLower = searchQuery.toLowerCase().trim();
+            if (!searchLower) return true;
+
+            const nameMatch = product.name.toLowerCase().includes(searchLower);
+            const descMatch = product.description?.toLowerCase().includes(searchLower);
+            const tagMatch = product.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+
+            return nameMatch || descMatch || tagMatch;
+        });
+    }, [products, searchQuery]);
     const [lastDocId, setLastDocId] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<{
@@ -618,10 +631,15 @@ export default function ProductsManager() {
                             <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                             <p>No products yet. Add your first product!</p>
                         </div>
+                    ) : filteredProducts.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500">
+                            <Filter className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                            <p>No products match your search criteria.</p>
+                        </div>
                     ) : (
                         <div>
                             <div className="divide-y divide-gray-100">
-                                {products.map((product) => {
+                                {filteredProducts.map((product) => {
                                     const offer = product.offerId ? getOfferName(product.offerId) : null;
                                     return (
                                         <div key={product.id} className="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
