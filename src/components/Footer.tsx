@@ -38,7 +38,9 @@ export default function Footer() {
                                 { Icon: Instagram, url: footer.socialLinks.instagram },
                                 { Icon: Twitter, url: footer.socialLinks.twitter },
                             ].map(({ Icon, url }, i) => (
-                                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-brand-lime hover:text-brand-dark hover:border-brand-lime transition-all duration-300">
+                                <a key={i} href={url} target="_blank" rel="noopener noreferrer"
+                                    aria-label={`Visit our ${Icon.name.replace("Lucide", "")} page`}
+                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-brand-lime hover:text-brand-dark hover:border-brand-lime transition-all duration-300">
                                     <Icon className="w-4 h-4" />
                                 </a>
                             ))}

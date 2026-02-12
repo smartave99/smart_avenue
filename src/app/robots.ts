@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: "/",
             disallow: "/admin/", // Assuming an admin path exists or might exist
         },
-        sitemap: "https://smartavnue.com/sitemap.xml",
+        sitemap: "https://smartavenue99.com/sitemap.xml",
     };
 }

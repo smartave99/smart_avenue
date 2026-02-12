@@ -15,15 +15,15 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://smartavnue.com"),
+  metadataBase: new URL("https://smartavenue99.com"),
   title: {
-    default: "Smart Avnue – All your home needs, simplified.",
-    template: "%s | Smart Avnue",
+    default: "Smart Avenue 99 – All your home needs, simplified.",
+    template: "%s | Smart Avenue 99",
   },
   description:
     "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
   keywords: [
-    "Smart Avnue retail store",
+    "Smart Avenue 99 retail store",
     "premium stationery store",
     "stylish stationery products",
     "affordable home décor store",
@@ -36,33 +36,33 @@ export const metadata: Metadata = {
     "gift shop",
     "online shopping",
   ],
-  authors: [{ name: "Smart Avnue" }],
-  creator: "Smart Avnue",
-  publisher: "Smart Avnue",
+  authors: [{ name: "Smart Avenue 99" }],
+  creator: "Smart Avenue 99",
+  publisher: "Smart Avenue 99",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://smartavnue.com",
-    title: "Smart Avnue – All your home needs, simplified.",
+    url: "https://smartavenue99.com",
+    title: "Smart Avenue 99 – All your home needs, simplified.",
     description:
       "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
-    siteName: "Smart Avnue",
+    siteName: "Smart Avenue 99",
     images: [
       {
-        url: "https://smartavnue.com/logo.png",
+        url: "https://smartavenue99.com/logo.png",
         width: 512,
         height: 512,
-        alt: "Smart Avnue Logo",
+        alt: "Smart Avenue 99 Logo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Smart Avnue – All your home needs, simplified.",
+    title: "Smart Avenue 99 – All your home needs, simplified.",
     description:
       "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
-    images: ["https://smartavnue.com/logo.png"],
-    creator: "@smartavnue",
+    images: ["https://smartavenue99.com/logo.png"],
+    creator: "@smartavenue99",
   },
   verification: {
     google: "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc",
@@ -86,30 +86,38 @@ export const metadata: Metadata = {
 };
 
 import { getSiteConfig } from "@/app/actions/site-config";
+import { DEFAULT_SITE_CONFIG } from "@/types/site-config";
+import { Suspense } from "react";
 
-export default async function RootLayout({
+// Optimized Layout that injects config into ClientLayout
+async function ConfigLoader({ children }: { children: React.ReactNode }) {
+  const siteConfig = await getSiteConfig();
+  return <ClientLayout initialConfig={siteConfig}>{children}</ClientLayout>;
+}
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteConfig = await getSiteConfig();
-
   return (
     <html lang="en">
       <body
         className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 text-slate-900 flex flex-col min-h-screen`}
       >
-        <ClientLayout initialConfig={siteConfig}>{children}</ClientLayout>
+        <Suspense fallback={<ClientLayout initialConfig={DEFAULT_SITE_CONFIG}>{children}</ClientLayout>}>
+          <ConfigLoader>{children}</ConfigLoader>
+        </Suspense>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "DepartmentStore",
-              "name": "Smart Avnue",
-              "url": "https://smartavnue.com",
-              "logo": "https://smartavnue.com/logo.png",
-              "image": "https://smartavnue.com/logo.png",
+              "name": "Smart Avenue 99",
+              "url": "https://smartavenue99.com",
+              "logo": "https://smartavenue99.com/logo.png",
+              "image": "https://smartavenue99.com/logo.png",
               "description": "One-stop departmental store offering home essentials, decor, kitchenware, and gifts.",
               "address": {
                 "@type": "PostalAddress",

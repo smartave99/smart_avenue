@@ -5,6 +5,7 @@ import CTA from "@/components/CTA";
 import Promotions from "@/components/Promotions";
 import { getSiteContent, FeaturesContent, CTAContent, HighlightsContent } from "@/app/actions";
 import { getSiteConfig } from "@/app/actions/site-config";
+import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +28,17 @@ export default async function Home() {
       <Promotions config={config.promotions} />
 
       {/* Dynamic Sections */}
-      <Highlights content={highlightsContent} />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-100" />}>
+        <Highlights content={highlightsContent} />
+      </Suspense>
 
-      <Features content={featuresContent} />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-100" />}>
+        <Features content={featuresContent} />
+      </Suspense>
 
-      <CTA content={ctaContent} />
+      <Suspense fallback={<div className="h-96 animate-pulse bg-slate-100" />}>
+        <CTA content={ctaContent} />
+      </Suspense>
     </div>
   );
 }

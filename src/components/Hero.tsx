@@ -103,7 +103,7 @@ export default function Hero() {
             {/* Slider Controls */}
             {slides.length > 1 && (
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6">
-                    <button onClick={prevSlide} className="p-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors">
+                    <button onClick={prevSlide} aria-label="Previous slide" className="p-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors">
                         <ChevronLeft className="w-6 h-6" />
                     </button>
                     <div className="flex gap-2">
@@ -111,11 +111,12 @@ export default function Hero() {
                             <button
                                 key={i}
                                 onClick={() => setCurrentSlide(i)}
+                                aria-label={`Go to slide ${i + 1}`}
                                 className={`w-2 h-2 rounded-full transition-all ${i === currentSlide ? "bg-brand-blue w-8" : "bg-white/30"}`}
                             />
                         ))}
                     </div>
-                    <button onClick={nextSlide} className="p-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors">
+                    <button onClick={nextSlide} aria-label="Next slide" className="p-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors">
                         <ChevronRight className="w-6 h-6" />
                     </button>
                 </div>

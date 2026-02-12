@@ -126,6 +126,7 @@ export default function Header() {
                         </AnimatePresence>
                         <button
                             onClick={toggleSearch}
+                            aria-label={isSearchOpen ? "Close search" : "Open search"}
                             className={`relative z-10 w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isSearchOpen
                                 ? "bg-slate-100 text-brand-blue"
                                 : isScrolled
@@ -144,6 +145,7 @@ export default function Header() {
                     className={`md:hidden p-2 rounded-lg transition-colors ${isScrolled ? "text-slate-800" : "text-white"
                         }`}
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                 >
                     {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>

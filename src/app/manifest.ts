@@ -3,9 +3,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Smart Avnue',
-        short_name: 'Smart Avnue',
-        description: 'We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, and more.',
+        name: 'Smart Avenue 99',
+        short_name: 'Smart Avenue 99',
+        description: 'Smart Avenue 99 is a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, and more.',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
