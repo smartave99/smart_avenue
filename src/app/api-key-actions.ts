@@ -244,6 +244,25 @@ export async function testAPIKey(keyOrId: string, isId: boolean = false, provide
                 const errorText = await response.text();
                 errorMessage = `HTTP ${statusCode} - ${errorText.substring(0, 100)}`;
             }
+        } else if (provider === "groq") {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey.trim()}`,
+                },
+                body: JSON.stringify({
+                    model: "llama3-8b-8192", // Fast model for testing
+                    messages: [{ role: "user", content: "Hi" }],
+                    max_tokens: 5,
+                }),
+            });
+            statusCode = response.status;
+            isValid = response.ok;
+            if (!isValid) {
+                const data = await response.json().catch(() => ({}));
+                errorMessage = data.error?.message || `HTTP ${statusCode}`;
+            }
         } else {
             return { success: false, error: "Unknown provider", isValid: false };
         }

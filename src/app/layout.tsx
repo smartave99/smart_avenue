@@ -85,17 +85,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { getSiteConfig } from "@/app/actions/site-config";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteConfig = await getSiteConfig();
+
   return (
     <html lang="en">
       <body
         className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 text-slate-900 flex flex-col min-h-screen`}
       >
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout initialConfig={siteConfig}>{children}</ClientLayout>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

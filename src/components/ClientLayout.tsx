@@ -7,15 +7,19 @@ import Footer from "./Footer";
 import { ErrorBoundary } from "./ErrorBoundary";
 import AssistantChat from "./assistant/AssistantChat";
 
+import { SiteConfig } from "@/types/site-config";
+
 export default function ClientLayout({
     children,
+    initialConfig,
 }: {
     children: React.ReactNode;
+    initialConfig: SiteConfig;
 }) {
     return (
         <ErrorBoundary>
             <AuthProvider>
-                <SiteConfigProvider>
+                <SiteConfigProvider initialConfig={initialConfig}>
                     <Header />
                     {children}
                     <AssistantChat />
