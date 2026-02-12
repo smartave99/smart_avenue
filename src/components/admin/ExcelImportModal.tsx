@@ -51,7 +51,7 @@ export default function ExcelImportModal({ isOpen, onClose, onSuccess }: ExcelIm
             } else {
                 setResult({ success: false, error: res.error as string });
             }
-        } catch (error) {
+        } catch {
             setResult({ success: false, error: "An unexpected error occurred." });
         } finally {
             setIsUploading(false);

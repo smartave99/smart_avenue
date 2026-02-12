@@ -12,7 +12,6 @@ import {
     Image as ImageIcon,
     Plus,
     Trash2,
-    GripVertical,
     Link as LinkIcon
 } from "lucide-react";
 import Link from "next/link";
@@ -110,7 +109,7 @@ export default function PromotionsPage() {
         });
     };
 
-    const handleUpdateItem = (index: number, field: keyof PromotionItem, value: any) => {
+    const handleUpdateItem = (index: number, field: keyof PromotionItem, value: string | boolean) => {
         if (!config) return;
         const newItems = [...config.promotions.items];
         newItems[index] = { ...newItems[index], [field]: value };
