@@ -155,7 +155,7 @@ export default function ProductsManager() {
             data = await searchProducts(searchQuery, categoryFilter, undefined, true);
             setHasMore(false); // Search fetches a large batch, don't paginate for now
         } else {
-            const limit = 100;
+            const limit = 20000;
             const startAfter = isLoadMore ? products[products.length - 1]?.id : undefined;
             data = await getProducts(categoryFilter, availableFilter, limit, startAfter);
             setHasMore(data.length === limit);
