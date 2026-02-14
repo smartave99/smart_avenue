@@ -11,6 +11,7 @@ import { SiteConfig } from "@/types/site-config";
 
 import PwaInstallPrompt from "./PwaInstallPrompt";
 import SwUpdateBanner from "./SwUpdateBanner";
+import VersionManager from "./VersionManager";
 
 export default function ClientLayout({
     children,
@@ -28,6 +29,7 @@ export default function ClientLayout({
                     <AssistantChat />
                     <PwaInstallPrompt />
                     <SwUpdateBanner />
+                    <VersionManager />
                     <Footer />
                 </SiteConfigProvider>
             </AuthProvider>

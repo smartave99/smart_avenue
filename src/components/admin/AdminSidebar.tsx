@@ -27,7 +27,8 @@ import {
     Phone,
     FileText,
     Navigation2,
-    Search
+    Search,
+    PanelBottom
 } from "lucide-react";
 import UploadModal from "@/components/admin/UploadModal";
 
@@ -76,13 +77,33 @@ const navGroups: NavGroup[] = [
                     { name: "Promotions", href: "/admin/content/promotions", permission: "promotions", uploadFolder: "promotions" },
                     { name: "Features", href: "/admin/content/features", permission: "features", uploadFolder: "homepage" },
                     { name: "CTA Section", href: "/admin/content/cta", permission: "cta", uploadFolder: "homepage" },
-                    { name: "Footer", href: "/admin/content/footer", permission: "footer", uploadFolder: "branding" },
                 ]
             },
-            { name: "About Us", href: "/admin/content/about", icon: Users, permission: "about", uploadFolder: "about" },
+            {
+                name: "About Us",
+                href: "/admin/content/about",
+                icon: Users,
+                permission: "about",
+                uploadFolder: "about",
+                subItems: [
+                    { name: "Contact Info", href: "/admin/content/contact", permission: "contact" }
+                ]
+            },
             { name: "Departments", href: "/admin/content/departments", icon: Tag, permission: "departments", uploadFolder: "departments" },
             { name: "Shop Page", href: "/admin/content/products-page", icon: Store, permission: "products-page", uploadFolder: "products" },
             { name: "Special Offers", href: "/admin/content/offers-page", icon: Megaphone, permission: "offers-page", uploadFolder: "offers" },
+            {
+                name: "Footer",
+                href: "/admin/content/footer",
+                icon: PanelBottom,
+                permission: "footer",
+                uploadFolder: "branding",
+                subItems: [
+                    { name: "Privacy Policy", href: "/admin/content/privacy", permission: "privacy" },
+                    { name: "Terms of Service", href: "/admin/content/terms", permission: "terms" },
+                    { name: "Navigation", href: "/admin/content/navigation", permission: "navigation" },
+                ]
+            },
         ]
     },
     {
@@ -102,10 +123,7 @@ const navGroups: NavGroup[] = [
     {
         title: "Miscellaneous",
         items: [
-            { name: "Contact Info", href: "/admin/content/contact", icon: Phone, permission: "contact" },
-            { name: "Privacy Policy", href: "/admin/content/privacy", icon: FileText, permission: "privacy" },
-            { name: "Terms of Service", href: "/admin/content/terms", icon: FileText, permission: "terms" },
-            { name: "Navigation", href: "/admin/content/navigation", icon: Navigation2, permission: "navigation" },
+
             { name: "SEO & Metadata", href: "/admin/content/seo", icon: Search, permission: "seo" },
         ]
     },

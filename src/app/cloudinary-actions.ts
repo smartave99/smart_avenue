@@ -55,3 +55,29 @@ export async function deleteFromCloudinary(publicId: string) {
         };
     }
 }
+
+export async function uploadToCloudinary(base64Image: string, folder: string, resourceType: "image" | "video" | "raw" = "image") {
+    try {
+        if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+            throw new Error("Missing Cloudinary configuration");
+        }
+
+        const result = await cloudinary.uploader.upload(base64Image, {
+            folder: `smart-avenue/${folder}`,
+            resource_type: resourceType,
+        });
+
+        return {
+            success: true,
+            url: result.secure_url,
+            publicId: result.public_id,
+        };
+    } catch (error) {
+        console.error("Cloudinary upload error:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown upload error",
+        };
+    }
+}
+
