@@ -5,7 +5,10 @@ import {
     User,
     onAuthStateChanged,
     signInWithEmailAndPassword,
-    signOut
+    signOut,
+    reauthenticateWithCredential,
+    updatePassword as firebaseUpdatePassword,
+    EmailAuthProvider
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getStaffData } from "@/app/actions";
@@ -17,6 +20,7 @@ interface AuthContextType {
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
     loading: true,
     login: async () => { },
     logout: async () => { },
+    changePassword: async () => ({ success: false }),
 });
 
 // Persist minimal auth state to localStorage for faster initial render
@@ -123,8 +128,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await signOut(auth);
     };
 
+    const changePassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
+        if (!user || !user.email) {
+            return { success: false, error: "No user logged in" };
+        }
+        try {
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+            await firebaseUpdatePassword(user, newPassword);
+            return { success: true };
+        } catch (err: unknown) {
+            const error = err as { code?: string; message?: string };
+            if (error?.code === "auth/wrong-password" || error?.code === "auth/invalid-credential") {
+                return { success: false, error: "Current password is incorrect" };
+            }
+            if (error?.code === "auth/weak-password") {
+                return { success: false, error: "New password is too weak. Use at least 6 characters." };
+            }
+            return { success: false, error: error?.message || "Failed to change password" };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, role, permissions, loading: loading || initializing, login, logout }}>
+        <AuthContext.Provider value={{ user, role, permissions, loading: loading || initializing, login, logout, changePassword }}>
             {!initializing && children}
         </AuthContext.Provider>
     );

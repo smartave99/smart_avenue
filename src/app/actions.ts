@@ -2,7 +2,7 @@
 // Force re-compile
 
 
-import { getAdminDb, admin } from "@/lib/firebase-admin";
+import { getAdminDb, getAdminAuth, admin } from "@/lib/firebase-admin";
 import { getSearchCache, CacheKeys } from "@/lib/search-cache";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
@@ -936,6 +936,117 @@ export async function getAllReviews(): Promise<(Review & { productName?: string 
     }
 }
 
+// ==================== ADMIN ACCOUNT SETTINGS ====================
+
+export interface AdminProfile {
+    name: string;
+    email: string;
+    phone?: string;
+    role: string;
+    photoUrl?: string;
+}
+
+export async function getAdminProfile(email: string): Promise<AdminProfile | null> {
+    try {
+        const snapshot = await getAdminDb().collection("staff").where("email", "==", email).limit(1).get();
+        if (!snapshot.empty) {
+            const data = snapshot.docs[0].data();
+            return {
+                name: data.name || "",
+                email: data.email || email,
+                phone: data.phone || "",
+                role: data.role ? data.role.charAt(0).toUpperCase() + data.role.slice(1) : "Staff",
+                photoUrl: data.photoUrl || "",
+            };
+        }
+        // For the hardcoded super admin
+        if (email === "admin@smartavenue99.com") {
+            return {
+                name: "Super Admin",
+                email,
+                phone: "",
+                role: "Admin",
+                photoUrl: "",
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching admin profile:", error);
+        return null;
+    }
+}
+
+export async function updateAdminProfile(email: string, data: { name?: string; phone?: string }) {
+    try {
+        const db = getAdminDb();
+        const snapshot = await db.collection("staff").where("email", "==", email).limit(1).get();
+
+        if (!snapshot.empty) {
+            const docId = snapshot.docs[0].id;
+            await db.collection("staff").doc(docId).update({
+                ...data,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        } else {
+            // Create a staff record if none exists (e.g. for super admin)
+            await db.collection("staff").add({
+                email,
+                ...data,
+                role: "admin",
+                permissions: ["*"],
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+
+        // Also update the Firebase Auth display name
+        try {
+            const authUser = await getAdminAuth().getUserByEmail(email);
+            if (authUser) {
+                await getAdminAuth().updateUser(authUser.uid, {
+                    displayName: data.name || undefined,
+                });
+            }
+        } catch (authError) {
+            console.warn("Could not update Firebase Auth display name:", authError);
+        }
+
+        revalidatePath("/admin/settings");
+        revalidatePath("/admin/staff");
+
+        return { success: true };
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    }
+}
+
+export async function updateAdminEmail(currentEmail: string, newEmail: string) {
+    try {
+        // Update Firebase Auth email
+        const authUser = await getAdminAuth().getUserByEmail(currentEmail);
+        if (!authUser) {
+            return { success: false, error: "User not found in Firebase Auth" };
+        }
+
+        await getAdminAuth().updateUser(authUser.uid, { email: newEmail });
+
+        // Update the Firestore staff record
+        const db = getAdminDb();
+        const snapshot = await db.collection("staff").where("email", "==", currentEmail).limit(1).get();
+        if (!snapshot.empty) {
+            await db.collection("staff").doc(snapshot.docs[0].id).update({
+                email: newEmail,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+
+        revalidatePath("/admin/settings");
+        revalidatePath("/admin/staff");
+
+        return { success: true };
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    }
+}
 
 
 

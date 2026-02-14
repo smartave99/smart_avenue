@@ -21,7 +21,8 @@ import {
     Upload,
     Paintbrush,
     Palette,
-    Smartphone
+    Smartphone,
+    Settings
 } from "lucide-react";
 import UploadModal from "@/components/admin/UploadModal";
 
@@ -83,12 +84,12 @@ const navGroups: NavGroup[] = [
         title: "Content",
         items: [
             { name: "Reviews", href: "/admin/content/reviews", icon: MessageSquare, permission: "reviews", uploadFolder: "reviews" },
+            { name: "Product Request", href: "/admin/content/product-request", icon: ClipboardList, permission: "product-request" },
         ]
     },
     {
         title: "Design",
         items: [
-            { name: "Site Appearance", href: "/admin/appearance", icon: Palette, permission: "branding" },
             { name: "Mobile App", href: "/admin/branding", icon: Smartphone, permission: "branding" },
         ]
     },
@@ -97,6 +98,7 @@ const navGroups: NavGroup[] = [
         items: [
             { name: "Staff", href: "/admin/staff", icon: Users, permission: "staff" },
             { name: "AI Assistant", href: "/admin/api-keys", icon: Bot, permission: "api-keys" },
+            { name: "Settings", href: "/admin/settings", icon: Settings },
         ]
     }
 ];
