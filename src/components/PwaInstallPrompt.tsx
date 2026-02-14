@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useSiteConfig } from '@/context/SiteConfigContext';
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -14,6 +15,9 @@ export default function PwaInstallPrompt() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
+    const { config } = useSiteConfig();
+
+    const screenshotUrl = config.branding.pwaScreenshotUrl || "";
 
     useEffect(() => {
         // specific check for standalone mode
@@ -82,42 +86,59 @@ export default function PwaInstallPrompt() {
                     exit={{ y: 100, opacity: 0 }}
                     className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96"
                 >
-                    <div className="bg-white rounded-xl shadow-2xl p-4 border border-blue-100 flex items-start gap-4">
-                        <div className="shrink-0 w-12 h-12 rounded-xl overflow-hidden border border-blue-100">
-                            <Image src="/logo.png" alt="Smart Avenue 99" width={48} height={48} className="w-full h-full object-contain" />
-                        </div>
-
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-1">Install App</h3>
-                            <p className="text-sm text-gray-600 mb-3">
-                                Install Smart Avenue 99 for a faster, better experience.
-                            </p>
-
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleInstallClick}
-                                    className="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    Install Now
-                                </button>
-                                <button
-                                    onClick={handleDismiss}
-                                    className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
-                                >
-                                    Not Now
-                                </button>
+                    <div className="bg-white rounded-xl shadow-2xl p-4 border border-blue-100">
+                        <div className="flex items-start gap-4">
+                            <div className="shrink-0 w-12 h-12 rounded-xl overflow-hidden border border-blue-100">
+                                <Image src={config.branding.logoUrl || "/logo.png"} alt={config.branding.siteName || "Smart Avenue 99"} width={48} height={48} className="w-full h-full object-contain" unoptimized />
                             </div>
+
+                            <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 mb-1">Install App</h3>
+                                <p className="text-sm text-gray-600 mb-3">
+                                    Install {config.branding.siteName || "Smart Avenue 99"} for a faster, better experience.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={handleDismiss}
+                                className="text-gray-400 hover:text-gray-600 p-1"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
 
-                        <button
-                            onClick={handleDismiss}
-                            className="text-gray-400 hover:text-gray-600 p-1"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                        {/* Screenshot Preview */}
+                        {screenshotUrl && (
+                            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 max-h-48">
+                                <Image
+                                    src={screenshotUrl}
+                                    alt="App Preview"
+                                    width={400}
+                                    height={250}
+                                    className="w-full h-auto object-cover"
+                                    unoptimized
+                                />
+                            </div>
+                        )}
+
+                        <div className="flex gap-2 mt-3">
+                            <button
+                                onClick={handleInstallClick}
+                                className="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                Install Now
+                            </button>
+                            <button
+                                onClick={handleDismiss}
+                                className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                                Not Now
+                            </button>
+                        </div>
                     </div>
                 </motion.div>
             )}
         </AnimatePresence>
     );
 }
+

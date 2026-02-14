@@ -18,7 +18,8 @@ import {
     ChevronDown,
     ChevronRight,
     Store,
-    Upload
+    Upload,
+    Paintbrush
 } from "lucide-react";
 import UploadModal from "@/components/admin/UploadModal";
 
@@ -86,6 +87,7 @@ const navGroups: NavGroup[] = [
     {
         title: "System",
         items: [
+            { name: "Branding", href: "/admin/branding", icon: Paintbrush, permission: "branding" },
             { name: "Staff", href: "/admin/staff", icon: Users, permission: "staff" },
             { name: "AI Assistant", href: "/admin/api-keys", icon: Bot, permission: "api-keys" },
         ]
