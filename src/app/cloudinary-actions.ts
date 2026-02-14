@@ -28,7 +28,7 @@ export async function uploadToCloudinary(
         console.error("Cloudinary upload error:", error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : "Unknown upload error",
         };
     }
 }
@@ -41,7 +41,7 @@ export async function deleteFromCloudinary(publicId: string) {
         console.error("Cloudinary delete error:", error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : "Unknown delete error",
         };
     }
 }
