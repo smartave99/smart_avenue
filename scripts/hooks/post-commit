@@ -1,0 +1,16 @@
+#!/bin/sh
+# .git/hooks/post-commit
+
+# Path to the tracking directory
+TRACKING_DIR=".tracking"
+HEAD_FILE="$TRACKING_DIR/HEAD"
+
+# Check if there is an active session
+if [ -f "$HEAD_FILE" ]; then
+    # Get the last commit hash
+    COMMIT_HASH=$(git rev-parse HEAD)
+    COMMIT_MSG=$(git log -1 --pretty=%B)
+    
+    # Log the commit to the tracking system
+    node scripts/track-cli.js log "Commit: $COMMIT_HASH - $COMMIT_MSG" --type=commit
+fi

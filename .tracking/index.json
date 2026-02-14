@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "test-task": {
+      "sessions": [
+        "6b548daa-4e4a-4d4f-a32e-f0fbeb5c0694"
+      ],
+      "commits": [],
+      "status": "active",
+      "lastUpdated": "2026-02-14T19:24:57.503Z"
+    }
+  }
+}

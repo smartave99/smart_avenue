@@ -14,6 +14,10 @@ export async function uploadToCloudinary(
     resourceType: "image" | "video" | "raw" | "auto" = "image"
 ) {
     try {
+        if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+            throw new Error("Missing Cloudinary configuration. Please check server environment variables.");
+        }
+
         const result = await cloudinary.uploader.upload(fileUri, {
             folder: `smart-avenue/${folder}`,
             resource_type: resourceType,

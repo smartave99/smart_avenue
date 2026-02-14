@@ -1,0 +1,32 @@
+#!/bin/sh
+# .git/hooks/prepare-commit-msg
+
+# Path to the tracking directory
+TRACKING_DIR=".tracking"
+HEAD_FILE="$TRACKING_DIR/HEAD"
+SESSIONS_DIR="$TRACKING_DIR/sessions"
+
+# Check if there is an active session
+if [ -f "$HEAD_FILE" ]; then
+    SESSION_ID=$(cat "$HEAD_FILE")
+    SESSION_FILE="$SESSIONS_DIR/$SESSION_ID.json"
+
+    if [ -f "$SESSION_FILE" ]; then
+        # Extract Task ID using node (since jq might not be available on all envs, but node is)
+        TASK_ID=$(node -e "const fs = require('fs'); try { const data = JSON.parse(fs.readFileSync('$SESSION_FILE', 'utf8')); console.log(data.taskId); } catch(e) {}")
+        
+        if [ ! -z "$TASK_ID" ]; then
+            COMMIT_MSG_FILE=$1
+            COMMIT_SOURCE=$2
+            SHA1=$3
+
+            # Avoid appending if already present or if it's a merge commit
+            if [ -z "$COMMIT_SOURCE" ] || [ "$COMMIT_SOURCE" = "message" ] || [ "$COMMIT_SOURCE" = "template" ]; then
+                # Check if Task ID is already in the message
+                if ! grep -q "Task: $TASK_ID" "$COMMIT_MSG_FILE"; then
+                    printf "\n\nTask: $TASK_ID" >> "$COMMIT_MSG_FILE"
+                fi
+            fi
+        fi
+    fi
+fi
