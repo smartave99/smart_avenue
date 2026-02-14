@@ -16,7 +16,7 @@ export default async function AboutPage() {
         phone: siteConfig.contact.phone,
         email: siteConfig.contact.email,
         mapEmbed: siteConfig.contact.mapEmbedUrl,
-        storeHours: "" // Will use default fallback in AboutContent
+        storeHours: siteConfig.contact.storeHours || ""
     };
 
     return <AboutContent content={pageContent} contact={contactContent} />;

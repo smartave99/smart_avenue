@@ -20,8 +20,14 @@ export default function AboutContent({ content, contact }: { content: AboutPageC
         visionText1: "We are not just a store; we are a logistics ecosystem designed for modern living. Smart Avenue bridges the gap between premium global brands and optimal local convenience.",
         visionText2: "Our platform leverages cutting-edge technology to ensure that quality, affordability, and speed are not mutually exclusive, but the standard for every interaction.",
         visionImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2301&auto=format&fit=crop",
+        heroLabel: "Our Story",
+        visionLabel: "Our Vision",
         statsCustomers: "10k+",
+        statsCustomersLabel: "Happy Customers",
         statsSatisfaction: "98%",
+        statsSatisfactionLabel: "Satisfaction Rate",
+        contactTitle: "Visit Our Store",
+        contactSubtitle: "We'd love to see you in person. Here's where you can find us.",
         valuesTitle: "The Smart Standard",
         valuesSubtitle: "Driven by innovation, grounded in integrity.",
         values: [
@@ -73,7 +79,7 @@ export default function AboutContent({ content, contact }: { content: AboutPageC
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        <span className="text-brand-lime font-bold tracking-[0.2em] uppercase text-sm mb-4 block animate-pulse">Our Story</span>
+                        <span className="text-brand-lime font-bold tracking-[0.2em] uppercase text-sm mb-4 block animate-pulse">{data.heroLabel || "Our Story"}</span>
                         <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
                             {data.heroTitle}
                         </h1>
@@ -89,7 +95,7 @@ export default function AboutContent({ content, contact }: { content: AboutPageC
                 <div className="flex flex-col md:flex-row items-center gap-16">
                     <div className="flex-1 space-y-8">
                         <div>
-                            <span className="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block">Our Vision</span>
+                            <span className="text-brand-blue font-bold tracking-widest uppercase text-xs mb-2 block">{data.visionLabel || "Our Vision"}</span>
                             <h2 className="text-4xl font-bold text-brand-dark mb-6 tracking-tight">{data.visionTitle}</h2>
                         </div>
                         <p className="text-slate-600 text-lg leading-relaxed">
@@ -103,12 +109,12 @@ export default function AboutContent({ content, contact }: { content: AboutPageC
                             <div className="p-4 bg-white rounded-xl shadow-sm border border-slate-100">
                                 <Users className="w-6 h-6 text-brand-blue mb-2" />
                                 <div className="text-2xl font-bold text-brand-dark">{data.statsCustomers}</div>
-                                <div className="text-sm text-slate-500">Happy Customers</div>
+                                <div className="text-sm text-slate-500">{data.statsCustomersLabel || "Happy Customers"}</div>
                             </div>
                             <div className="p-4 bg-white rounded-xl shadow-sm border border-slate-100">
                                 <TrendingUp className="w-6 h-6 text-brand-lime mb-2" />
                                 <div className="text-2xl font-bold text-brand-dark">{data.statsSatisfaction}</div>
-                                <div className="text-sm text-slate-500">Satisfaction Rate</div>
+                                <div className="text-sm text-slate-500">{data.statsSatisfactionLabel || "Satisfaction Rate"}</div>
                             </div>
                         </div>
                     </div>
@@ -172,8 +178,8 @@ export default function AboutContent({ content, contact }: { content: AboutPageC
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="text-center mb-16">
                         <span className="text-brand-blue font-bold tracking-widest uppercase text-sm mb-2 block">Get in Touch</span>
-                        <h2 className="text-4xl font-bold text-brand-dark mb-4 tracking-tight">Visit Our Store</h2>
-                        <p className="text-slate-500 max-w-2xl mx-auto">We&apos;d love to see you in person. Here&apos;s where you can find us.</p>
+                        <h2 className="text-4xl font-bold text-brand-dark mb-4 tracking-tight">{data.contactTitle || "Visit Our Store"}</h2>
+                        <p className="text-slate-500 max-w-2xl mx-auto">{data.contactSubtitle || "We'd love to see you in person. Here's where you can find us."}</p>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

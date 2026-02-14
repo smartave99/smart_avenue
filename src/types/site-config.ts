@@ -107,6 +107,7 @@ export interface SiteConfig {
         instagramUrl?: string;
         twitterUrl?: string;
         whatsappUrl?: string;
+        storeHours: string;
     };
 }
 
@@ -195,5 +196,6 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
         email: "contact@smartavenue.com",
         address: "Patna, Bihar, India",
         mapEmbedUrl: "",
+        storeHours: "Monday - Sunday\n10:00 AM - 10:00 PM",
     },
 };

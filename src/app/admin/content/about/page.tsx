@@ -16,12 +16,18 @@ const defaultContent: AboutPageContent = {
     heroTitle: "Smart Avenue",
     heroSubtitle: "Building the future of retail, right here in your city.",
     heroImage: "",
+    heroLabel: "Our Story",
     visionTitle: "Redefining Retail in Patna",
+    visionLabel: "Our Vision",
     visionText1: "We are not just a store; we are a logistics ecosystem designed for modern living. Smart Avenue bridges the gap between premium global brands and optimal local convenience.",
     visionText2: "Our platform leverages cutting-edge technology to ensure that quality, affordability, and speed are not mutually exclusive, but the standard for every interaction.",
     visionImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2301&auto=format&fit=crop",
     statsCustomers: "10k+",
+    statsCustomersLabel: "Happy Customers",
     statsSatisfaction: "98%",
+    statsSatisfactionLabel: "Satisfaction Rate",
+    contactTitle: "Visit Our Store",
+    contactSubtitle: "We'd love to see you in person. Here's where you can find us.",
     valuesTitle: "The Smart Standard",
     valuesSubtitle: "Driven by innovation, grounded in integrity.",
     values: [
@@ -133,12 +139,26 @@ export default function AboutPageEditor() {
                             <h3 className="font-semibold text-gray-800 border-b border-gray-100 pb-2 mb-4">Hero Section</h3>
                             <div className="space-y-4">
                                 <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Hero Label (Small Text above Title)</label>
+                                    <input type="text" value={content.heroLabel || ""} onChange={(e) => setContent({ ...content, heroLabel: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Hero Title</label>
                                     <input type="text" value={content.heroTitle} onChange={(e) => setContent({ ...content, heroTitle: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Hero Subtitle</label>
                                     <textarea value={content.heroSubtitle} onChange={(e) => setContent({ ...content, heroSubtitle: e.target.value })} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Hero Background Image</label>
+                                    <CloudinaryUpload
+                                        folder="about"
+                                        maxFiles={1}
+                                        currentImages={content.heroImage ? [content.heroImage] : []}
+                                        onUpload={(files) => files[0] && setContent({ ...content, heroImage: files[0].url })}
+                                        onRemoveImage={() => setContent({ ...content, heroImage: "" })}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -147,6 +167,10 @@ export default function AboutPageEditor() {
                         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                             <h3 className="font-semibold text-gray-800 border-b border-gray-100 pb-2 mb-4">Vision Section</h3>
                             <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Vision Label (Small Text above Title)</label>
+                                    <input type="text" value={content.visionLabel || ""} onChange={(e) => setContent({ ...content, visionLabel: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Vision Title</label>
                                     <input type="text" value={content.visionTitle} onChange={(e) => setContent({ ...content, visionTitle: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
@@ -171,11 +195,21 @@ export default function AboutPageEditor() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Happy Customers</label>
-                                        <input type="text" value={content.statsCustomers} onChange={(e) => setContent({ ...content, statsCustomers: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Customer Label</label>
+                                        <input type="text" value={content.statsCustomersLabel || ""} onChange={(e) => setContent({ ...content, statsCustomersLabel: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Satisfaction Rate</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Customers Value</label>
+                                        <input type="text" value={content.statsCustomers} onChange={(e) => setContent({ ...content, statsCustomers: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Satisfaction Label</label>
+                                        <input type="text" value={content.statsSatisfactionLabel || ""} onChange={(e) => setContent({ ...content, statsSatisfactionLabel: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Stats: Satisfaction Value</label>
                                         <input type="text" value={content.statsSatisfaction} onChange={(e) => setContent({ ...content, statsSatisfaction: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
                                     </div>
                                 </div>
@@ -208,6 +242,10 @@ export default function AboutPageEditor() {
                                                 <label className="block text-xs font-medium text-gray-500 mb-1">Icon (Lucide Name)</label>
                                                 <input type="text" value={val.icon} onChange={(e) => updateValue(idx, "icon", e.target.value)} className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded" />
                                             </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1">Icon Color (Tailwind class)</label>
+                                                <input type="text" value={val.color || ""} onChange={(e) => updateValue(idx, "color", e.target.value)} placeholder="text-brand-blue" className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded" />
+                                            </div>
                                         </div>
                                         <div>
                                             <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
@@ -215,6 +253,21 @@ export default function AboutPageEditor() {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Contact Overrides */}
+                        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                            <h3 className="font-semibold text-gray-800 border-b border-gray-100 pb-2 mb-4">Contact Section Overlay</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+                                    <input type="text" value={content.contactTitle || ""} onChange={(e) => setContent({ ...content, contactTitle: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Section Subtitle</label>
+                                    <textarea value={content.contactSubtitle || ""} onChange={(e) => setContent({ ...content, contactSubtitle: e.target.value })} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg" />
+                                </div>
                             </div>
                         </div>
 

@@ -181,6 +181,7 @@ export interface DepartmentsPageContent {
     heroTitle: string;
     heroSubtitle: string;
     heroImage: string;
+    heroLabel?: string;
 }
 
 export interface AboutPageContent {
@@ -191,6 +192,12 @@ export interface AboutPageContent {
     visionText1: string;
     visionText2: string;
     visionImage: string;
+    heroLabel?: string;
+    visionLabel?: string;
+    statsCustomersLabel?: string;
+    statsSatisfactionLabel?: string;
+    contactTitle?: string;
+    contactSubtitle?: string;
     statsCustomers: string;
     statsSatisfaction: string;
     valuesTitle: string;
@@ -199,7 +206,7 @@ export interface AboutPageContent {
         title: string;
         desc: string;
         icon: string; // Icon name matching Lucide icons
-        color: string; // Tailwind class
+        color?: string; // Tailwind class
     }[];
 }
 
