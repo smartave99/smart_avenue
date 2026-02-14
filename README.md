@@ -40,3 +40,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ### AI Shopping Assistant
 Smart Avenue includes an intelligent AI assistant that helps users find products and handles requests for out-of-stock items.
 -   [AI Product Request System Documentation](docs/ai-product-requests.md)
+
+### Automated Tracking System
+The codebase includes an automated system for tracking development progress and generating reports.
+- **Start a task**: `npm run track init <task-id>`
+- **Log work**: `npm run track log "message"`
+- **Finish task**: `npm run track stop`
+- **Documentation**: [Tracking System Design](docs/tracking_system/README.md)

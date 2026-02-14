@@ -764,20 +764,21 @@ export default function ProductsManager() {
                                             <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                                                 {product.imageUrl ? (
                                                     <Image
-                                                        src={product.imageUrl}
+                                                        src={(() => {
+                                                            // Auto-optimize delivery if it's a Cloudinary URL and doesn't have transformations
+                                                            if (product.imageUrl.includes("cloudinary.com") && !product.imageUrl.includes("f_auto,q_auto")) {
+                                                                // Insert transformation before /v[version]/ or /upload/
+                                                                // Simplest way: use Cloudinary fetch API or just regex insert
+                                                                // Regex to find /upload/ and replace with /upload/f_auto,q_auto/
+                                                                return product.imageUrl.replace("/upload/", "/upload/f_auto,q_auto/");
+                                                            }
+                                                            return product.imageUrl;
+                                                        })()}
                                                         alt={product.name}
                                                         fill
                                                         className="object-cover"
                                                         unoptimized
                                                         onError={(e) => {
-                                                            // Next.js Image component onError handling is different, usually needs state to switch to fallback
-                                                            // For simplicity in this fix, we might want to keep it simple or implement fallback state logic
-                                                            // But straightforward replacement with unoptimized is requested.
-                                                            // The previous onError logic: (e.target as HTMLImageElement).src = ...
-                                                            // This doesn't work easily with next/image.
-                                                            // I will omit onError for now or use a simple fallback if I had time to implement state.
-                                                            // Given this is an admin dashboard, broken image icon is acceptable or I can try a different approach.
-                                                            // However, since I must provide valid TSX in replacement:
                                                             const target = e.target as HTMLImageElement;
                                                             target.style.display = 'none'; // Simple fallback to hide broken image
                                                         }}

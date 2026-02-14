@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Upload, X, Loader2, Film, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { uploadToCloudinary } from "@/app/cloudinary-actions";
+import { getCloudinarySignature } from "@/app/cloudinary-actions";
 
 export interface CloudinaryFile {
     url: string;
@@ -59,42 +59,65 @@ export default function CloudinaryUpload({
         const newFiles: CloudinaryFile[] = [];
 
         try {
+            // Get signature first (one signature can be used for the batch usually, but let's get one per file or batch if needed. 
+            // Cloudinary signatures are valid for a specific set of params. 
+            // If we are just setting folder and timestamp, we can reuse it if the timestamp is recent enough, 
+            // but getting strict signature per session is safer/easier to implement without complex state.)
+            // Actually, for simple folder uploads, we can just fetch signature once if params are identical.
+            // But let's keep it simple: fetch signature -> upload.
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const resourceType = file.type.startsWith("video/") ? "video" : "image";
 
-                // Check file size (max 100MB for video, 50MB for image)
-                const maxSize = resourceType === "video" ? 100 * 1024 * 1024 : 50 * 1024 * 1024;
+                // Check file size (max 100MB for video, 10MB for image - standard Cloudinary free tier limits are smaller than server, but direct upload is better)
+                // Let's keep the previous generous limits or adjust to realistic Cloudinary limits.
+                const maxSize = resourceType === "video" ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
                 if (file.size > maxSize) {
-                    throw new Error(`File ${file.name} is too large (max ${resourceType === "video" ? "100MB" : "50MB"})`);
+                    throw new Error(`File ${file.name} is too large (max ${resourceType === "video" ? "100MB" : "10MB"})`);
                 }
 
-                // Convert file to base64 for server action
-                const reader = new FileReader();
-                const filePromise = new Promise<string>((resolve, reject) => {
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
+                // Optimization transformation: Limit width to 1200px, auto quality, auto format
+                // This ensures we don't store massive raw files
+                const transformation = "w_1200,c_limit,q_auto,f_auto";
+
+                // Get signature with transformation
+                const sigResult = await getCloudinarySignature(folder, transformation);
+
+                if (!sigResult.success || !sigResult.signature || !sigResult.timestamp || !sigResult.apiKey || !sigResult.cloudName) {
+                    throw new Error(sigResult.error || "Failed to get upload signature");
+                }
+
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("api_key", sigResult.apiKey);
+                formData.append("timestamp", sigResult.timestamp.toString());
+                formData.append("signature", sigResult.signature);
+                formData.append("folder", `smart-avenue/${folder}`); // Match the server-side signing folder structure
+                // Note: Cloudinary expects just "folder" param in signed upload to match signature.
+                // In getCloudinarySignature we signed: folder: `smart-avenue/${folder}`
+                // So we must pass exactly that.
+                formData.append("transformation", transformation); // Must match signed param
+
+                const uploadUrl = `https://api.cloudinary.com/v1_1/${sigResult.cloudName}/${resourceType}/upload`;
+
+                const response = await fetch(uploadUrl, {
+                    method: "POST",
+                    body: formData,
                 });
-                reader.readAsDataURL(file);
-                const base64File = await filePromise;
 
-                // Upload with 60-second timeout to prevent infinite hang
-                const result = await Promise.race([
-                    uploadToCloudinary(base64File, folder, resourceType),
-                    new Promise<never>((_, reject) =>
-                        setTimeout(() => reject(new Error("Upload timed out after 60 seconds. Please try again.")), 60000)
-                    )
-                ]);
-
-                if (result.success && result.url && result.publicId) {
-                    newFiles.push({
-                        url: result.url,
-                        publicId: result.publicId,
-                        resourceType
-                    });
-                } else {
-                    throw new Error(result.error || "Upload failed");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || "Upload failed");
                 }
+
+                const data = await response.json();
+
+                newFiles.push({
+                    url: data.secure_url,
+                    publicId: data.public_id,
+                    resourceType
+                });
             }
 
             onUpload(newFiles);

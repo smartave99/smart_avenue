@@ -15,7 +15,7 @@ export default async function ProductsPage({
     const params = await searchParams;
 
     // Fetch data
-    const productsPromise = getProducts(undefined, undefined, 1000); // Fetch more to filter locally for now
+    const productsPromise = getProducts(undefined, true, 1000); // Fetch only available products
     const categoriesPromise = getCategories();
     const offersPromise = getOffers();
     const contentPromise = getSiteContent<ProductsPageContent>("products-page");
@@ -59,10 +59,8 @@ export default async function ProductsPage({
         filteredProducts = filteredProducts.filter(p => p.price <= Number(params.maxPrice));
     }
 
-    // 4. Availability
-    if (params.available === "true") {
-        filteredProducts = filteredProducts.filter(p => p.available);
-    }
+    // 4. Availability - Already filtered by getProducts(..., true, ...)
+
 
     // 5. Rating (Mock logic if rating not in DB, assuming it might be)
     if (params.rating) {

@@ -15,7 +15,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         getReviews(id)
     ]);
 
-    if (!product) {
+    if (!product || !product.available) {
         notFound();
     }
 

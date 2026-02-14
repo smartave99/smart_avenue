@@ -145,6 +145,10 @@ function main() {
             }
             logEvent(message, type);
             break;
+        case 'report':
+            const reportTaskId = args[1];
+            require('./generate-report').generateReport(reportTaskId);
+            break;
         case 'stop':
             stopSession();
             break;
