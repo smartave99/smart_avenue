@@ -1,5 +1,5 @@
 
-import { getAdminDb } from "@/lib/firebase-admin";
+import { getAdminDb } from "../src/lib/firebase-admin";
 
 async function verifyQuery() {
     console.log("Starting verification of fix logic...");
