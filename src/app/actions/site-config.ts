@@ -9,6 +9,32 @@ const CONFIG_COLLECTION = "site_config";
 const CONFIG_DOC_ID = "main";
 
 /**
+ * Deep merges two objects.
+ * - Arrays are replaced, not merged.
+ * - Objects are merged recursively.
+ * - Primitives are overridden.
+ */
+function deepMerge(target: any, source: any): any {
+    if (typeof target !== 'object' || target === null || typeof source !== 'object' || source === null) {
+        return source;
+    }
+
+    if (Array.isArray(target) || Array.isArray(source)) {
+        return source; // Arrays are replaced entirely
+    }
+
+    const output = { ...target };
+    Object.keys(source).forEach(key => {
+        if (key in target) {
+            output[key] = deepMerge(target[key], source[key]);
+        } else {
+            output[key] = source[key];
+        }
+    });
+    return output;
+}
+
+/**
  * Fetches the site configuration from Firestore.
  * Returns the default config if the document doesn't exist.
  */
@@ -24,71 +50,27 @@ export const getSiteConfig = cache(async function getSiteConfig(): Promise<SiteC
             return DEFAULT_SITE_CONFIG;
         }
 
-        // Merge with default to ensure all fields are present (in case of schema updates)
         const data = docSnap.data() as Partial<SiteConfig>;
 
-        // Deep merge helper could be useful here, but for now simple spread at top level
-        // For a robust app, we should deeply merge.
-        const mergedHero = { ...DEFAULT_SITE_CONFIG.hero, ...data.hero };
+        // Perform a deep merge to ensure all fields are present while respecting DB values
+        const mergedConfig = deepMerge(DEFAULT_SITE_CONFIG, data) as SiteConfig;
 
-        // Server-side migration: ensure slides exists
-        if (!mergedHero.slides && mergedHero.title) {
-            mergedHero.slides = [{
+        // Server-side migration: ensure slides exists if older hero config is present
+        if (!mergedConfig.hero.slides && (mergedConfig.hero as any).title) {
+            const legacyHero = mergedConfig.hero as any;
+            mergedConfig.hero.slides = [{
                 id: "migrated-1",
-                title: mergedHero.title,
-                subtitle: mergedHero.subtitle || "",
-                ctaText: mergedHero.ctaText || "Learn More",
-                ctaLink: mergedHero.ctaLink || "/products",
-                learnMoreLink: mergedHero.learnMoreLink,
-                backgroundImageUrl: mergedHero.backgroundImageUrl || "",
-                overlayOpacity: mergedHero.overlayOpacity || 0.6,
+                title: legacyHero.title,
+                subtitle: legacyHero.subtitle || "",
+                ctaText: legacyHero.ctaText || "Learn More",
+                ctaLink: legacyHero.ctaLink || "/products",
+                learnMoreLink: legacyHero.learnMoreLink,
+                backgroundImageUrl: legacyHero.backgroundImageUrl || "",
+                overlayOpacity: legacyHero.overlayOpacity || 0.6,
             }];
         }
 
-        return {
-            ...DEFAULT_SITE_CONFIG,
-            ...data,
-            branding: { ...DEFAULT_SITE_CONFIG.branding, ...data.branding },
-            theme: { ...DEFAULT_SITE_CONFIG.theme, ...data.theme },
-            hero: mergedHero,
-            promotions: { ...DEFAULT_SITE_CONFIG.promotions, ...data.promotions },
-            footer: {
-                ...DEFAULT_SITE_CONFIG.footer,
-                ...data.footer,
-                navigation: {
-                    shop: {
-                        title: "Shop",
-                        links: [
-                            { name: "Departments", href: "/departments" },
-                            { name: "All Products", href: "/products" },
-                            { name: "Weekly Offers", href: "/offers" },
-                        ]
-                    },
-                    company: {
-                        title: "Company",
-                        links: [
-                            { name: "Our Story", href: "/about" },
-                            { name: "Contact Us", href: "/contact" },
-                        ]
-                    }
-                },
-                bottomLinks: [
-                    { name: "Privacy Policy", href: "/privacy" },
-                    { name: "Terms of Service", href: "/terms" },
-                    { name: "Sitemap", href: "/sitemap.xml" },
-                ]
-            },
-            sections: { ...DEFAULT_SITE_CONFIG.sections, ...data.sections },
-            contact: {
-                ...DEFAULT_SITE_CONFIG.contact,
-                ...data.contact,
-                phone: "",
-                email: "",
-                address: "",
-                mapEmbedUrl: "",
-                storeHours: "",
-            },
-        };
+        return mergedConfig;
     } catch (error) {
         console.error("Error fetching site config:", error);
         return DEFAULT_SITE_CONFIG;
