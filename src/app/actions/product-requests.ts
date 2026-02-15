@@ -70,3 +70,12 @@ export async function updateProductRequestStatus(id: string, status: "pending" |
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
     }
 }
+
+export async function deleteProductRequest(id: string) {
+    try {
+        await getAdminDb().collection("product_requests").doc(id).delete();
+        return { success: true };
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    }
+}

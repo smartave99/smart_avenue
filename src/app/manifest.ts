@@ -1,39 +1,31 @@
 
 import { MetadataRoute } from 'next';
+import { getSiteConfig } from "@/app/actions/site-config";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+    const config = await getSiteConfig();
+    const manifest = config.manifest;
+
     return {
-        name: 'Smart Avenue 99',
-        short_name: 'Smart Avenue 99',
-        description: 'Smart Avenue 99 is a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, and more.',
-        start_url: '/',
-        display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#0284c7', // brand-blue
+        name: manifest.name || 'Smart Avenue 99',
+        short_name: manifest.shortName || 'Smart Avenue 99',
+        description: manifest.description || 'Smart Avenue 99 is a one-stop departmental store.',
+        start_url: manifest.startUrl || '/',
+        display: manifest.display || 'standalone',
+        background_color: manifest.backgroundColor || '#ffffff',
+        theme_color: manifest.themeColor || '#0284c7',
         icons: [
             {
-                src: '/logo.png',
+                src: config.branding.logoUrl || '/logo.png',
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: '/logo.png',
+                src: config.branding.logoUrl || '/logo.png',
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any',
-            },
-            {
-                src: '/logo.png',
-                sizes: '192x192',
-                type: 'image/png',
-                purpose: 'maskable',
-            },
-            {
-                src: '/logo.png',
-                sizes: '512x512',
-                type: 'image/png',
-                purpose: 'maskable',
             },
         ],
     };

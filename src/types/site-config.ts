@@ -89,6 +89,67 @@ export interface PromotionsConfig {
     items: PromotionItem[];
 }
 
+export interface SystemConfig {
+    maintenanceMode: boolean;
+    robotsTxt: string; // Custom content for robots.txt
+    sitemapXml?: string; // Optional custom sitemap URL or content
+    scripts: {
+        googleAnalyticsId?: string;
+        facebookPixelId?: string;
+        customHeadScript?: string;
+        customBodyScript?: string;
+    };
+}
+
+export interface ManifestConfig {
+    name: string;
+    shortName: string;
+    description: string;
+    themeColor: string;
+    backgroundColor: string;
+    display: 'standalone' | 'fullscreen' | 'minimal-ui' | 'browser';
+    startUrl: string;
+}
+
+export interface FrontendLabels {
+    placeholders: {
+        search: string;
+        email: string;
+    };
+    buttons: {
+        subscribe: string;
+        viewCollection: string;
+        shopNow: string;
+        search: string;
+    };
+    messages: {
+        success: string;
+        error: string;
+        loading: string;
+        footerConnect: string;
+        footerNoSpam: string;
+        copyright: string;
+    }
+}
+
+export interface SeoConfig {
+    siteTitle: string;
+    titleTemplate: string;
+    metaDescription: string;
+    keywords: string[];
+    ogImageUrl: string;
+    twitterHandle: string;
+    googleVerification: string;
+    jsonLd: {
+        name: string;
+        url: string;
+        logo: string;
+        description: string;
+        addressCountry: string;
+        priceRange: string;
+    };
+}
+
 export interface SiteConfig {
     branding: BrandingConfig;
     theme: ThemeConfig;
@@ -113,6 +174,10 @@ export interface SiteConfig {
         storeHours: string;
     };
     headerLinks?: FooterLink[];
+    system: SystemConfig;
+    manifest: ManifestConfig;
+    labels: FrontendLabels;
+    seo: SeoConfig;
 }
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
@@ -211,5 +276,67 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
         { name: "Departments", href: "/departments" },
         { name: "Special Offers", href: "/offers" },
         { name: "About Us", href: "/about" },
-    ]
+    ],
+    system: {
+        maintenanceMode: false,
+        robotsTxt: "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://smartavenue99.com/sitemap.xml",
+        scripts: {},
+    },
+    manifest: {
+        name: "Smart Avenue 99",
+        shortName: "Smart Avenue",
+        description: "Experience International Retail at your fingertips.",
+        themeColor: "#064e3b",
+        backgroundColor: "#ffffff",
+        display: "standalone",
+        startUrl: "/",
+    },
+    labels: {
+        placeholders: {
+            search: "Search collections...",
+            email: "Enter your email address",
+        },
+        buttons: {
+            subscribe: "Subscribe",
+            viewCollection: "View Collection",
+            shopNow: "Shop Now",
+            search: "Search",
+        },
+        messages: {
+            success: "Operation successful!",
+            error: "Something went wrong.",
+            loading: "Loading...",
+            footerConnect: "Connect",
+            footerNoSpam: "No spam, unsubscribe anytime",
+            copyright: "All rights reserved.",
+        }
+    },
+    seo: {
+        siteTitle: "Smart Avenue 99 – All your home needs, simplified.",
+        titleTemplate: "%s | Smart Avenue 99",
+        metaDescription: "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items.",
+        keywords: [
+            "Smart Avenue 99 retail store",
+            "premium stationery store",
+            "stylish stationery products",
+            "affordable home décor store",
+            "kitchen décor products",
+            "soft toys shop",
+            "home essentials store",
+            "retail store near me",
+            "gift shop",
+            "online shopping",
+        ],
+        ogImageUrl: "/logo.png",
+        twitterHandle: "@smartavenue99",
+        googleVerification: "",
+        jsonLd: {
+            name: "Smart Avenue 99",
+            url: "https://smartavenue99.com",
+            logo: "/logo.png",
+            description: "One-stop departmental store offering home essentials, decor, kitchenware, and gifts.",
+            addressCountry: "IN",
+            priceRange: "₹₹",
+        },
+    }
 };

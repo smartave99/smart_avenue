@@ -75,17 +75,17 @@ export default function Footer() {
                             <form className="relative max-w-md group" onSubmit={(e) => e.preventDefault()}>
                                 <input
                                     type="email"
-                                    placeholder="Enter your email address"
+                                    placeholder={config.labels?.placeholders?.email || "Enter your email address"}
                                     className="w-full bg-brand-dark border border-white/20 text-white px-5 py-4 pr-32 focus:outline-none focus:border-brand-lime transition-colors rounded-none placeholder:text-slate-600"
                                 />
                                 <button type="submit" className="absolute right-1 top-1 bottom-1 bg-white text-brand-dark px-6 font-bold uppercase text-sm tracking-wide hover:bg-brand-lime transition-colors">
-                                    Subscribe
+                                    {config.labels?.buttons?.subscribe || "Subscribe"}
                                 </button>
                             </form>
 
                             <div className="mt-8 flex items-center gap-2 text-xs text-slate-500">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                <span>No spam, unsubscribe anytime.</span>
+                                <span>{config.labels?.messages?.footerNoSpam || "No spam, unsubscribe anytime."}</span>
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,9 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="p-6 lg:p-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-mono uppercase tracking-tight">
                     <p>
-                        &copy; {new Date().getFullYear()} {branding.siteName}. All rights reserved.
+                        {config.labels?.messages?.copyright ?
+                            config.labels.messages.copyright.replace("{year}", new Date().getFullYear().toString()) :
+                            `© ${new Date().getFullYear()} ${branding.siteName || "Smart Avenue 99"}. All rights reserved.`}
                     </p>
                     <div className="flex gap-6">
                         {footer.bottomLinks.map((link, idx) => (

@@ -87,7 +87,7 @@ const navGroups: NavGroup[] = [
             { name: "Departments", href: "/admin/content/departments", icon: Tag, permission: "departments", uploadFolder: "departments" },
             {
                 name: "Shop Page",
-                href: "/admin/content/products-page", // Keep parent href for clickability if needed, or remove. Structure implies clickable parent or toggle.
+                href: "/admin/content/products-page",
                 icon: Store,
                 permission: "products-page",
                 uploadFolder: "products",
@@ -115,14 +115,13 @@ const navGroups: NavGroup[] = [
         title: "Feedback",
         items: [
             { name: "Reviews", href: "/admin/content/reviews", icon: MessageSquare, permission: "reviews", uploadFolder: "reviews" },
-            { name: "Product Request", href: "/admin/requests", icon: ClipboardList, permission: "product-request" },
         ]
     },
     {
         title: "Design",
         items: [
+            { name: "Brand Identity", href: "/admin/content/branding", icon: Image, permission: "branding" },
             { name: "Mobile App", href: "/admin/branding", icon: Smartphone, permission: "branding" },
-            { name: "Appearance", href: "/admin/appearance", icon: Palette, permission: "appearance" },
             { name: "SEO & Metadata", href: "/admin/content/seo", icon: Search, permission: "seo" },
         ]
     },
@@ -131,14 +130,39 @@ const navGroups: NavGroup[] = [
         items: [
             { name: "Staff", href: "/admin/staff", icon: Users, permission: "staff" },
             { name: "Settings", href: "/admin/settings", icon: Settings },
+            { name: "AI Assistant", href: "/admin/api-keys", icon: Bot, permission: "api-keys" },
         ]
     },
     {
-        title: "Miscellaneous",
+        title: "Others",
         items: [
-            { name: "Global Branding", href: "/admin/content/branding", icon: Image, permission: "branding" },
-            { name: "PWA Assets", href: "/admin/branding", icon: Smartphone, permission: "branding" },
-            { name: "AI Assistant", href: "/admin/api-keys", icon: Bot, permission: "api-keys" },
+            {
+                name: "Configuration",
+                href: "/admin/others/configuration",
+                icon: Settings,
+                permission: "system"
+            },
+            {
+                name: "Frontend Labels",
+                href: "/admin/others/labels",
+                icon: Tag,
+                permission: "system"
+            },
+            {
+                name: "PWA Manifest",
+                href: "/admin/others/manifest",
+                icon: Smartphone,
+                permission: "branding"
+            },
+            {
+                name: "Data Management",
+                icon: ClipboardList,
+                permission: "system",
+                subItems: [
+                    { name: "Newsletter", href: "/admin/others/newsletter" },
+                    { name: "Product Requests", href: "/admin/requests" }, // Keeping existing route but grouped here
+                ]
+            },
         ]
     }
 ];
@@ -148,7 +172,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }: { mobileOpen
     const router = useRouter();
     const pathname = usePathname();
 
-    // Manage expanded state for top-level groups
+    // Manage expanded expanded state for top-level groups
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
         "Overview": true,
         "Catalog": true,
@@ -156,7 +180,7 @@ export default function AdminSidebar({ mobileOpen, setMobileOpen }: { mobileOpen
         "Feedback": false,
         "Design": true,
         "System": false,
-        "Miscellaneous": false
+        "Others": false
     });
 
     // Manage expanded state for nested items (like Homepage)

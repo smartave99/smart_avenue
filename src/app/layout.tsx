@@ -3,6 +3,10 @@ import { Inter, Outfit } from "next/font/google";
 import ClientLayout from "@/components/ClientLayout";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { getSiteConfig } from "@/app/actions/site-config";
+import { DEFAULT_SITE_CONFIG } from "@/types/site-config";
+import { Suspense } from "react";
+import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,80 +19,45 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://smartavenue99.com"),
-  title: {
-    default: "Smart Avenue 99 – All your home needs, simplified.",
-    template: "%s | Smart Avenue 99",
-  },
-  description:
-    "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
-  keywords: [
-    "Smart Avenue 99 retail store",
-    "premium stationery store",
-    "stylish stationery products",
-    "affordable home décor store",
-    "kitchen décor products",
-    "soft toys shop",
-    "plastic home products",
-    "home essentials store",
-    "premium products affordable price",
-    "retail store near me",
-    "gift shop",
-    "online shopping",
-  ],
-  authors: [{ name: "Smart Avenue 99" }],
-  creator: "Smart Avenue 99",
-  publisher: "Smart Avenue 99",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://smartavenue99.com",
-    title: "Smart Avenue 99 – All your home needs, simplified.",
-    description:
-      "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
-    siteName: "Smart Avenue 99",
-    images: [
-      {
-        url: "https://smartavenue99.com/logo.png",
-        width: 512,
-        height: 512,
-        alt: "Smart Avenue 99 Logo",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Smart Avenue 99 – All your home needs, simplified.",
-    description:
-      "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items—bringing comfort, convenience, and elegance to everyday living.",
-    images: ["https://smartavenue99.com/logo.png"],
-    creator: "@smartavenue99",
-  },
-  verification: {
-    google: "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  icons: {
-    icon: "/favicon.ico?v=2",
-    apple: "/apple-icon.png?v=2",
-  },
-  themeColor: "#0284c7", // brand-blue
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+  const { branding, system } = config;
 
-import { getSiteConfig } from "@/app/actions/site-config";
-import { DEFAULT_SITE_CONFIG } from "@/types/site-config";
-import { Suspense } from "react";
+  return {
+    metadataBase: new URL("https://smartavenue99.com"),
+    title: {
+      default: branding.siteName || "Smart Avenue 99",
+      template: `%s | ${branding.siteName || "Smart Avenue 99"}`,
+    },
+    description: branding.tagline || "Shop the best products online.",
+    icons: {
+      icon: branding.faviconUrl || "/favicon.ico",
+    },
+    robots: system.robotsTxt ? null : {
+      index: true,
+      follow: true
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: "https://smartavenue99.com",
+      title: branding.siteName,
+      description: branding.tagline,
+      siteName: branding.siteName,
+      images: [
+        {
+          url: branding.logoUrl || "/logo.png",
+          width: 512,
+          height: 512,
+          alt: branding.siteName,
+        },
+      ],
+    },
+    other: {
+      "google-site-verification": system.scripts.googleAnalyticsId ? undefined : "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc" // Fallback or manage via admin
+    }
+  };
+}
 
 // Optimized Layout that injects config into ClientLayout
 async function ConfigLoader({ children }: { children: React.ReactNode }) {
@@ -96,39 +65,48 @@ async function ConfigLoader({ children }: { children: React.ReactNode }) {
   return <ClientLayout initialConfig={siteConfig}>{children}</ClientLayout>;
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getSiteConfig();
+
   return (
     <html lang="en">
+      <head>
+        {config.system.scripts.customHeadScript && (
+          <div dangerouslySetInnerHTML={{ __html: config.system.scripts.customHeadScript }} />
+        )}
+        {config.system.scripts.googleAnalyticsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${config.system.scripts.googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${config.system.scripts.googleAnalyticsId}');
+                    `}
+            </Script>
+          </>
+        )}
+      </head>
       <body
         className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 text-slate-900 flex flex-col min-h-screen`}
       >
         <Suspense fallback={<ClientLayout initialConfig={DEFAULT_SITE_CONFIG}>{children}</ClientLayout>}>
           <ConfigLoader>{children}</ConfigLoader>
         </Suspense>
+
+        {config.system.scripts.customBodyScript && (
+          <div dangerouslySetInnerHTML={{ __html: config.system.scripts.customBodyScript }} />
+        )}
+
         <SpeedInsights />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "DepartmentStore",
-              "name": "Smart Avenue 99",
-              "url": "https://smartavenue99.com",
-              "logo": "https://smartavenue99.com/logo.png",
-              "image": "https://smartavenue99.com/logo.png",
-              "description": "One-stop departmental store offering home essentials, decor, kitchenware, and gifts.",
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "IN"
-              },
-              "priceRange": "₹₹"
-            })
-          }}
-        />
       </body>
     </html>
   );

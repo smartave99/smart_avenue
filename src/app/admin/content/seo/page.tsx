@@ -4,62 +4,19 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { getSiteConfig, updateSiteConfig } from "@/app/actions/site-config";
-import { SiteConfig } from "@/types/site-config";
+import { SiteConfig, SeoConfig, DEFAULT_SITE_CONFIG } from "@/types/site-config";
 import { ArrowLeft, Save, Loader2, Search, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
-interface SeoConfig {
-    siteTitle: string;
-    titleTemplate: string;
-    metaDescription: string;
-    keywords: string[];
-    ogImageUrl: string;
-    twitterHandle: string;
-    googleVerification: string;
-    jsonLd: {
-        name: string;
-        url: string;
-        logo: string;
-        description: string;
-        addressCountry: string;
-        priceRange: string;
-    };
-}
 
-const DEFAULT_SEO: SeoConfig = {
-    siteTitle: "Smart Avenue 99 – All your home needs, simplified.",
-    titleTemplate: "%s | Smart Avenue 99",
-    metaDescription: "We are a one-stop departmental store offering a wide range of home essentials, stylish home décor, premium kitchenware, durable plasticware, quality crockery, cosmetics, premium stationery, soft toys, and thoughtfully curated gift items.",
-    keywords: [
-        "Smart Avenue 99 retail store",
-        "premium stationery store",
-        "stylish stationery products",
-        "affordable home décor store",
-        "kitchen décor products",
-        "soft toys shop",
-        "home essentials store",
-        "retail store near me",
-        "gift shop",
-        "online shopping",
-    ],
-    ogImageUrl: "https://smartavenue99.com/logo.png",
-    twitterHandle: "@smartavenue99",
-    googleVerification: "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc",
-    jsonLd: {
-        name: "Smart Avenue 99",
-        url: "https://smartavenue99.com",
-        logo: "https://smartavenue99.com/logo.png",
-        description: "One-stop departmental store offering home essentials, decor, kitchenware, and gifts.",
-        addressCountry: "IN",
-        priceRange: "₹₹",
-    },
-};
+
+
 
 export default function SeoEditor() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [config, setConfig] = useState<SiteConfig | null>(null);
-    const [seo, setSeo] = useState<SeoConfig>(DEFAULT_SEO);
+    const [seo, setSeo] = useState<SeoConfig>(DEFAULT_SITE_CONFIG.seo);
     const [newKeyword, setNewKeyword] = useState("");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -82,9 +39,8 @@ export default function SeoEditor() {
         try {
             const data = await getSiteConfig();
             setConfig(data);
-            const existingSeo = (data as SiteConfig & { seo?: SeoConfig }).seo;
-            if (existingSeo) {
-                setSeo({ ...DEFAULT_SEO, ...existingSeo });
+            if (data.seo) {
+                setSeo({ ...DEFAULT_SITE_CONFIG.seo, ...data.seo });
             }
         } catch (error) {
             console.error("Failed to load config:", error);
@@ -99,8 +55,8 @@ export default function SeoEditor() {
         setSaving(true);
         setSaved(false);
 
-        const updatedConfig = { ...config, seo } as SiteConfig & { seo: SeoConfig };
-        const result = await updateSiteConfig(updatedConfig as unknown as SiteConfig);
+        const updatedConfig = { ...config, seo };
+        const result = await updateSiteConfig(updatedConfig);
 
         if (result.success) {
             setSaved(true);
