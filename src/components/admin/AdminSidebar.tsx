@@ -22,7 +22,6 @@ import {
     PanelBottom,
     ClipboardList,
     Smartphone,
-    Palette,
     Settings,
     Image
 } from "lucide-react";

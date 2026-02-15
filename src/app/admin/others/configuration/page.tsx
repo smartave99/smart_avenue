@@ -58,7 +58,7 @@ export default function ConfigurationPage() {
         setSaving(false);
     };
 
-    const updateSystemConfig = (field: keyof SystemConfig, value: any) => {
+    const updateSystemConfig = (field: keyof SystemConfig, value: string | boolean) => {
         if (!config) return;
         setConfig({
             ...config,
@@ -127,7 +127,7 @@ export default function ConfigurationPage() {
                                         Enable Maintenance Mode
                                     </label>
                                     <p className="text-sm text-gray-500 mt-1">
-                                        When enabled, only administrators can access the site. Visitors will see a "Under Maintenance" page.
+                                        When enabled, only administrators can access the site. Visitors will see a &quot;Under Maintenance&quot; page.
                                     </p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">

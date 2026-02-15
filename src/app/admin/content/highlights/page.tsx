@@ -225,7 +225,7 @@ export default function HighlightsEditor() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">"View All" Button Label</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">&quot;View All&quot; Button Label</label>
                                         <input
                                             type="text"
                                             value={content.viewAllLabel || ""}
@@ -235,7 +235,7 @@ export default function HighlightsEditor() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">"Explore" Card Label</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">&quot;Explore&quot; Card Label</label>
                                         <input
                                             type="text"
                                             value={content.exploreLabel || ""}

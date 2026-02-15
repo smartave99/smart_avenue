@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     other: {
-      "google-site-verification": system.scripts.googleAnalyticsId ? undefined : "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc" // Fallback or manage via admin
+      ...(system.scripts.googleAnalyticsId ? {} : { "google-site-verification": "P58XCY_8uZe5I7QC5eNh2wivKElDpu2ckaI60IgD5yc" })
     }
   };
 }
