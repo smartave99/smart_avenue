@@ -25,7 +25,7 @@ async function verifyQuery() {
                 // Sort in memory
                 products.sort((a: any, b: any) => b.createdAt - a.createdAt);
                 console.log("In-memory sort completed.");
-                console.log("Top product:", products[0]?.name);
+                console.log("Top product:", (products[0] as any)?.name);
             } else {
                 throw e;
             }
