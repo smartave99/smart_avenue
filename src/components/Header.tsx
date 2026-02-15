@@ -35,7 +35,7 @@ export default function Header() {
             router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
             setSearchQuery("");
             setIsSearchOpen(false);
-            setIsMobileMenuOpen(false);
+            setIsMenuOpen(false);
         }
     };
 
