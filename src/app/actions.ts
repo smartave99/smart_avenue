@@ -528,24 +528,30 @@ export const getProducts = cache(async function getProducts(
             query = query.where("categoryId", "==", categoryId);
         }
 
-        if (available !== undefined) {
-            query = query.where("available", "==", available);
-        }
-
         // Logic to avoid missing index error:
         // If filtering by 'available', we cannot sort by 'createdAt' without a composite index.
         // So we skip DB sorting and sort in memory.
         let snapshot;
 
         if (available !== undefined) {
-            // specific optimization: no orderBy
+            query = query.where("available", "==", available);
+            // specific optimization: no orderBy to avoid index requirement
             snapshot = await query.limit(limitCount).get();
         } else {
             // default behavior: sort by createdAt
-            snapshot = await query.orderBy("createdAt", "desc").limit(limitCount).get();
+            let orderedQuery = query.orderBy("createdAt", "desc");
+
+            if (startAfterId) {
+                const startAfterDoc = await getAdminDb().collection("products").doc(startAfterId).get();
+                if (startAfterDoc.exists) {
+                    orderedQuery = orderedQuery.startAfter(startAfterDoc);
+                }
+            }
+
+            snapshot = await orderedQuery.limit(limitCount).get();
         }
 
-        let products = snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => ({
+        const products = snapshot.docs.map((doc: admin.firestore.QueryDocumentSnapshot) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: (doc.data().createdAt as admin.firestore.Timestamp)?.toDate() || new Date(),
@@ -557,21 +563,12 @@ export const getProducts = cache(async function getProducts(
             products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         }
 
-        // Handle pagination if startAfterId is present AND we used orderBy (standard path)
-        // If we are in the "available" path, strict pagination is tricky without the index, 
-        // but since we limit to 200 (or limitCount), we might just be getting the first N matches.
-        // For now this fixes the visibility issue. 
-        if (startAfterId && available === undefined) {
-            // Note: Re-implementing startAfter logic properly would require fetching the doc first
-            // which was done in the original code. 
-            // To keep it simple and robust, we assume the initial fetch above is sufficient for the fix.
-            // If strict pagination is needed with 'available', we'd need to fetch more and slice in memory.
+        // Cache if this was a cacheable query
+        if (canUseCache) {
+            cache.set(CacheKeys.allProducts(), products);
         }
 
-        // Restore pagination support for the standard case (no availability filter) efficiently?
-        // Actually, the original code applied startAfter BEFORE get().
-        // Let's refine the logic to support startAfter in the standard case.
-
+        return products;
     } catch (error) {
         console.error("Error fetching products:", error);
         return [];
@@ -586,18 +583,15 @@ export async function searchProducts(
     searchQuery: string,
     categoryId?: string,
     subcategoryId?: string,
-    available?: boolean
+    includeUnavailable: boolean = false
 ): Promise<Product[]> {
     // For admin/global search, we want to fetch a larger batch to find items
     const allProducts = await getProducts(undefined, undefined, 1000);
 
     const searchLower = searchQuery.toLowerCase().trim();
 
-    // Filter by availability if specified
-    let filtered = allProducts;
-    if (available !== undefined) {
-        filtered = filtered.filter(p => p.available === available);
-    }
+    // Filter to available products first (unless includeUnavailable is true)
+    let filtered = includeUnavailable ? allProducts : allProducts.filter(p => p.available);
 
 
     // Text search filter
@@ -1065,7 +1059,3 @@ export async function updateAdminEmail(currentEmail: string, newEmail: string) {
         return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
     }
 }
-
-
-
-
