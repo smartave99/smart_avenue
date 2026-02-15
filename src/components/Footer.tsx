@@ -18,22 +18,20 @@ export default function Footer() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-white/10 border-b border-white/10">
 
                     {/* Brand / Logo Section (Spans 3) */}
-                    <div className="lg:col-span-3 p-8 lg:p-10 flex flex-col justify-between min-h-[300px] bg-brand-dark/50 backdrop-blur-sm">
-                        <Link href="/" className="block group">
-                            <div className="relative w-auto h-20 max-w-[240px] transition-transform duration-500 group-hover:scale-105">
+                    <div className="lg:col-span-3 p-8 lg:p-10 flex flex-col items-center md:items-start text-center md:text-left bg-brand-dark/50 backdrop-blur-sm">
+                        <Link href="/" className="mb-6 group">
+                            <div className="relative w-48 h-12 transition-transform duration-300 group-hover:scale-105">
                                 <Image
-                                    src={footer.logoUrl || branding.logoUrl || "/logo.png"}
-                                    alt={branding.siteName}
+                                    src={config.branding.logoUrl || "/logo.png"}
+                                    alt={config.branding.siteName}
                                     fill
-                                    className="object-contain object-left"
+                                    className="object-contain"
                                 />
                             </div>
                         </Link>
-                        <div className="mt-auto pt-8">
-                            <p className="text-slate-400 text-sm leading-relaxed font-light">
-                                {footer.tagline}
-                            </p>
-                        </div>
+                        <p className="text-slate-400 max-w-sm leading-relaxed">
+                            {config.footer.tagline || config.branding.tagline}
+                        </p>
                     </div>
 
                     {/* Navigation: Shop (Spans 2) */}
