@@ -84,7 +84,17 @@ const navGroups: NavGroup[] = [
                 ]
             },
             { name: "Departments", href: "/admin/content/departments", icon: Tag, permission: "departments", uploadFolder: "departments" },
-            { name: "Shop Page", href: "/admin/content/products-page", icon: Store, permission: "products-page", uploadFolder: "products" },
+            {
+                name: "Shop Page",
+                href: "/admin/content/products-page", // Keep parent href for clickability if needed, or remove. Structure implies clickable parent or toggle.
+                icon: Store,
+                permission: "products-page",
+                uploadFolder: "products",
+                subItems: [
+                    { name: "Listing Page", href: "/admin/content/products-page", permission: "products-page" },
+                    { name: "Specific Product Page", href: "/admin/content/specific-product-page", permission: "products-page" }
+                ]
+            },
             { name: "Special Offers", href: "/admin/content/offers-page", icon: Megaphone, permission: "offers-page", uploadFolder: "offers" },
             {
                 name: "Footer",

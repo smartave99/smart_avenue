@@ -87,6 +87,15 @@ export async function updateSiteConfig(newConfig: SiteConfig): Promise<{ success
         const docRef = adminDb.collection(CONFIG_COLLECTION).doc(CONFIG_DOC_ID);
         await docRef.set(newConfig);
 
+        // Verification step: Read back to ensure persistence
+        // This catches issues where we might be using a mock DB (due to missing creds) or write failures
+        const verifySnap = await docRef.get();
+        if (!verifySnap.exists) {
+            throw new Error("Verification failed: Document does not exist after save. Check database connection.");
+        }
+
+        // Optional: Deep compare specific critical fields if needed, but existence is the main check for Mock DB
+
         // Revalidate all pages since this affects global layout/theme
         revalidatePath("/", "layout");
 

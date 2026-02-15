@@ -174,6 +174,18 @@ export interface ProductsPageContent {
     showAvailability?: boolean;
 }
 
+export interface ProductDetailPageContent {
+    availabilityText: string;
+    availabilityBadge: string;
+    callToActionNumber: string;
+    visitStoreLink: string;
+    authenticityTitle: string;
+    authenticityText: string;
+    storeLocationTitle: string;
+    storeLocationText: string;
+    storeHoursText: string;
+}
+
 export interface OffersPageContent {
     heroTitle: string;
     heroSubtitle: string;

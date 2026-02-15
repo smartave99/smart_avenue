@@ -1,4 +1,4 @@
-import { getProduct, getReviews, getCategories } from "@/app/actions";
+import { getProduct, getReviews, getCategories, getSiteContent, ProductDetailPageContent } from "@/app/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, MapPin, Phone, Clock, ShieldCheck, Check, Star } from "lucide-react";
@@ -10,11 +10,27 @@ export const revalidate = 0;
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const [product, reviews, categories] = await Promise.all([
+
+    // Fetch product, reviews, categories, and dynamic site content
+    const [product, reviews, categories, siteContent] = await Promise.all([
         getProduct(id),
         getReviews(id),
-        getCategories()
+        getCategories(),
+        getSiteContent<ProductDetailPageContent>("product-detail-page")
     ]);
+
+    // Default fallbacks in case content is not set
+    const content: ProductDetailPageContent = {
+        availabilityText: siteContent?.availabilityText || "Available In-Store Only",
+        availabilityBadge: siteContent?.availabilityBadge || "In-Store Only",
+        callToActionNumber: siteContent?.callToActionNumber || "+91-9876543210",
+        visitStoreLink: siteContent?.visitStoreLink || "/content/contact",
+        authenticityTitle: siteContent?.authenticityTitle || "Authenticity Guaranteed",
+        authenticityText: siteContent?.authenticityText || "Directly from authorized distributors with full manufacturer warranty.",
+        storeLocationTitle: siteContent?.storeLocationTitle || "Store Location",
+        storeLocationText: siteContent?.storeLocationText || "Patliputra colony, P&M Mall, Patna",
+        storeHoursText: siteContent?.storeHoursText || "Open Daily: 10:00 AM - 9:00 PM"
+    };
 
     if (!product || !product.available) {
         notFound();
@@ -146,22 +162,22 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                                 </span>
-                                Available In-Store Only
+                                {content.availabilityText}
                             </div>
                             <p className="text-sm text-slate-500">
-                                This premium item is available exclusively at our offline store. Visit us to experience it firsthand.
+                                {content.availabilityBadge} - Visit us to experience it firsthand.
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <a
-                                    href="tel:+919876543210" // Ideally fetch from site settings
+                                    href={`tel:${content.callToActionNumber}`}
                                     className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
                                 >
                                     <Phone className="w-4 h-4" />
                                     Call to Check
                                 </a>
                                 <Link
-                                    href="/content/contact"
+                                    href={content.visitStoreLink}
                                     className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-dark text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
                                 >
                                     <MapPin className="w-4 h-4" />
@@ -176,9 +192,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                                 <ShieldCheck className="w-6 h-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-slate-900">Authenticity Guaranteed</h4>
+                                <h4 className="font-bold text-slate-900">{content.authenticityTitle}</h4>
                                 <p className="text-sm text-slate-600 mt-1">
-                                    Directly from authorized distributors with full manufacturer warranty.
+                                    {content.authenticityText}
                                 </p>
                             </div>
                         </div>
@@ -243,13 +259,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                         </section>
                     </div>
 
-                    {/* Sidebar / Recommendations could go here */}
+                    {/* Sidebar / Recommendations */}
                     <div className="hidden lg:block lg:col-span-4 space-y-8">
                         {/* Store Location Map Mini */}
                         <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
                             <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                                 <MapPin className="w-5 h-5 text-brand-dark" />
-                                Store Location
+                                {content.storeLocationTitle}
                             </h3>
                             <div className="aspect-video bg-slate-200 rounded-xl mb-4 overflow-hidden relative">
                                 {/* Placeholder for map image or embed */}
@@ -260,11 +276,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                             <div className="space-y-3 text-sm text-slate-600">
                                 <div className="flex items-start gap-3">
                                     <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                                    <p>Patliputra colony<br />P&M Mall, Patna</p>
+                                    <p dangerouslySetInnerHTML={{ __html: content.storeLocationText.replace(/\n|,/g, '<br/>') }} />
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <Clock className="w-4 h-4 mt-0.5 shrink-0" />
-                                    <p>Open Daily<br />10:00 AM - 9:00 PM</p>
+                                    <p dangerouslySetInnerHTML={{ __html: content.storeHoursText.replace(/\n/g, '<br/>') }} />
                                 </div>
                             </div>
                         </div>
