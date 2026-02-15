@@ -7,6 +7,7 @@ export interface BrandingConfig {
     pwaScreenshotUrl?: string;
     instagramUrl?: string;
     whatsappUrl?: string;
+    searchPlaceholder?: string;
 }
 
 export interface ThemeConfig {
@@ -67,7 +68,9 @@ export interface FooterConfig {
     newsletter: {
         title: string;
         description: string;
+        subtext?: string;
     };
+    socialSectionTitle?: string;
     socialLinks: {
         facebook: string;
         instagram: string;
@@ -120,7 +123,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
         posterUrl: "",
         pwaScreenshotUrl: "",
         instagramUrl: "",
-        whatsappUrl: ""
+        whatsappUrl: "",
+        searchPlaceholder: "Search collections..."
     },
     theme: {
         primaryColor: "#064e3b", // Deep Emerald Green
@@ -159,7 +163,9 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
         newsletter: {
             title: "Join the Movement",
             description: "Get the latest collections and exclusive offers sent to your inbox.",
+            subtext: "No spam, unsubscribe anytime",
         },
+        socialSectionTitle: "Connect",
         socialLinks: {
             facebook: "#",
             instagram: "#",
@@ -198,4 +204,11 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
         mapEmbedUrl: "",
         storeHours: "Monday - Sunday\n10:00 AM - 10:00 PM",
     },
+    headerLinks: [
+        { name: "Home", href: "/" },
+        { name: "Products", href: "/products" },
+        { name: "Departments", href: "/departments" },
+        { name: "Special Offers", href: "/offers" },
+        { name: "About Us", href: "/about" },
+    ]
 };

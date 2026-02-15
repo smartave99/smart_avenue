@@ -144,6 +144,7 @@ export interface FeaturesContent {
         desc: string;
         icon: string;
     }[];
+    description?: string;
 }
 
 export interface CTAContent {
@@ -160,6 +161,8 @@ export interface HighlightsContent {
     title: string;
     subtitle: string;
     description: string;
+    viewAllLabel?: string;
+    exploreLabel?: string;
 }
 
 export interface ProductsPageContent {
