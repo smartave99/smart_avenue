@@ -115,9 +115,9 @@ export default function Footer() {
                     <div className="p-6 lg:p-8 flex items-center justify-start md:justify-end gap-3">
                         <span className="text-xs uppercase tracking-widest text-slate-500 mr-4 hidden md:block">Connect</span>
                         {[
-                            { Icon: Facebook, url: footer.socialLinks.facebook },
-                            { Icon: Instagram, url: footer.socialLinks.instagram },
-                            { Icon: Twitter, url: footer.socialLinks.twitter },
+                            { Icon: Facebook, url: footer.socialLinks.facebook !== "#" ? footer.socialLinks.facebook : (contact?.facebookUrl || "#") },
+                            { Icon: Instagram, url: footer.socialLinks.instagram !== "#" ? footer.socialLinks.instagram : (branding?.instagramUrl || "#") },
+                            { Icon: Twitter, url: footer.socialLinks.twitter !== "#" ? footer.socialLinks.twitter : (contact?.twitterUrl || "#") },
                         ].map(({ Icon, url }, i) => (
                             <a key={i} href={url} target="_blank" rel="noopener noreferrer"
                                 className="w-10 h-10 border border-white/10 flex items-center justify-center hover:bg-white hover:text-brand-dark hover:border-white transition-all duration-300 group">
