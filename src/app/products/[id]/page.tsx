@@ -1,108 +1,276 @@
-import { getProduct, getReviews } from "@/app/actions";
+import { getProduct, getReviews, getCategories } from "@/app/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Truck, ShieldCheck } from "lucide-react";
+import { ChevronRight, MapPin, Phone, Clock, ShieldCheck, Check, Star } from "lucide-react";
 import ImageGallery from "@/components/ImageGallery";
 import { Reviews } from "@/components/Reviews";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0; // Ensure fresh data on every request
+export const revalidate = 0;
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const [product, reviews] = await Promise.all([
+    const [product, reviews, categories] = await Promise.all([
         getProduct(id),
-        getReviews(id)
+        getReviews(id),
+        getCategories()
     ]);
 
     if (!product || !product.available) {
         notFound();
     }
 
+    const category = categories.find(c => c.id === product.categoryId);
+    const subcategory = product.subcategoryId ? categories.find(c => c.id === product.subcategoryId) : null;
+
     const discount = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
         : 0;
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12">
-            <div className="container mx-auto px-4 max-w-6xl">
-                {/* Breadcrumb / Back */}
-                <Link
-                    href="/products"
-                    className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-brand-dark mb-8 transition-colors"
-                >
-                    <ChevronLeft className="w-4 h-4 mr-1" />
-                    Back to Products
-                </Link>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-                    {/* Image Gallery */}
-                    <div className="space-y-4">
-                        <ImageGallery
-                            images={product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : [])}
-                            videoUrl={product.videoUrl}
-                            productName={product.name}
-                            discount={discount}
-                            isFeatured={product.featured}
-                        />
-                    </div>
-
-                    {/* Product Info */}
-                    <div>
-                        <div className="mb-2">
-                            <span className="text-brand-blue font-bold text-sm uppercase tracking-wider">
-                                {product.categoryId} {/* Using ID for now, ideally fetch category name */}
-                            </span>
-                        </div>
-                        <h1 className="text-4xl font-bold text-brand-dark mb-4 leading-tight">
-                            {product.name}
-                        </h1>
-
-                        <div className="flex items-baseline gap-4 mb-6">
-                            <span className="text-3xl font-bold text-brand-dark">
-                                ₹{product.price.toLocaleString()}
-                            </span>
-                            {product.originalPrice && (
-                                <span className="text-xl text-slate-400 line-through">
-                                    ₹{product.originalPrice.toLocaleString()}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="prose prose-slate mb-8 text-slate-600">
-                            <p>{product.description}</p>
-                        </div>
-
-                        {/* Features */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-100">
-                                <Truck className="w-5 h-5 text-brand-blue shrink-0" />
-                                <div>
-                                    <h4 className="font-bold text-sm text-brand-dark">Store Pickup</h4>
-                                    <p className="text-xs text-slate-500 mt-1">Available at P&M Mall</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3 p-4 bg-white rounded-xl border border-slate-100">
-                                <ShieldCheck className="w-5 h-5 text-brand-blue shrink-0" />
-                                <div>
-                                    <h4 className="font-bold text-sm text-brand-dark">Warranty</h4>
-                                    <p className="text-xs text-slate-500 mt-1">1 year official warranty</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Reviews Section */}
-                <div className="max-w-4xl mx-auto">
-                    <Reviews
-                        productId={product.id}
-                        reviews={reviews}
-                        averageRating={product.averageRating}
-                        reviewCount={product.reviewCount}
-                    />
+        <div className="min-h-screen bg-white text-slate-900 font-sans">
+            {/* Breadcrumb Navigation */}
+            <div className="bg-slate-50 border-b border-slate-100">
+                <div className="container mx-auto px-4 max-w-7xl py-4">
+                    <nav className="flex items-center text-sm text-slate-500 gap-2">
+                        <Link href="/" className="hover:text-brand-dark transition-colors">Home</Link>
+                        <ChevronRight className="w-4 h-4 text-slate-400" />
+                        <Link href="/products" className="hover:text-brand-dark transition-colors">Products</Link>
+                        {category && (
+                            <>
+                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                                <Link href={`/products?category=${category.id}`} className="hover:text-brand-dark transition-colors">
+                                    {category.name}
+                                </Link>
+                            </>
+                        )}
+                        {subcategory && (
+                            <>
+                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                                <span className="text-slate-800 font-medium">{subcategory.name}</span>
+                            </>
+                        )}
+                    </nav>
                 </div>
             </div>
+
+            <main className="container mx-auto px-4 max-w-7xl py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+                    {/* Left Column: Image Gallery */}
+                    <div className="lg:col-span-7">
+                        <div className="sticky top-24">
+                            <ImageGallery
+                                images={product.images && product.images.length > 0 ? product.images : (product.imageUrl ? [product.imageUrl] : [])}
+                                videoUrl={product.videoUrl}
+                                productName={product.name}
+                                discount={discount}
+                                isFeatured={product.featured}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right Column: Product Info */}
+                    <div className="lg:col-span-5 space-y-8">
+                        <div>
+                            {category && (
+                                <Link
+                                    href={`/products?category=${category.id}`}
+                                    className="text-brand-blue font-bold text-sm uppercase tracking-wider mb-2 inline-block hover:underline"
+                                >
+                                    {category.name}
+                                </Link>
+                            )}
+                            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">
+                                {product.name}
+                            </h1>
+
+                            {/* Rating */}
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="flex text-amber-400">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                            key={star}
+                                            className={`w-5 h-5 ${star <= Math.round(product.averageRating || 0) ? "fill-current" : "text-slate-200 fill-slate-200"}`}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="text-sm font-medium text-slate-600">
+                                    {product.averageRating ? product.averageRating.toFixed(1) : "New"}
+                                </span>
+                                {product.reviewCount ? (
+                                    <span className="text-sm text-slate-400">
+                                        ({product.reviewCount} reviews)
+                                    </span>
+                                ) : null}
+                            </div>
+
+                            {/* Price Section */}
+                            <div className="flex items-end gap-4 border-b border-slate-100 pb-8">
+                                <div className="space-y-1">
+                                    <span className="text-4xl font-bold text-slate-900 tracking-tight">
+                                        ₹{product.price.toLocaleString()}
+                                    </span>
+                                    {discount > 0 && (
+                                        <p className="text-sm text-brand-blue font-medium">
+                                            You save ₹{(product.originalPrice! - product.price).toLocaleString()} ({discount}%)
+                                        </p>
+                                    )}
+                                </div>
+                                {product.originalPrice && (
+                                    <span className="text-xl text-slate-400 line-through mb-1">
+                                        ₹{product.originalPrice.toLocaleString()}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Highlights */}
+                        {product.highlights && product.highlights.length > 0 && (
+                            <div className="space-y-3">
+                                <h3 className="font-semibold text-slate-900">Highlights</h3>
+                                <ul className="space-y-2">
+                                    {product.highlights.map((highlight, index) => (
+                                        <li key={index} className="flex items-start gap-3 text-slate-700">
+                                            <Check className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
+                                            <span>{highlight}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* Availability & Store Actions */}
+                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
+                            <div className="flex items-center gap-2 text-brand-green font-medium">
+                                <span className="relative flex h-3 w-3">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                </span>
+                                Available In-Store Only
+                            </div>
+                            <p className="text-sm text-slate-500">
+                                This premium item is available exclusively at our offline store. Visit us to experience it firsthand.
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <a
+                                    href="tel:+919876543210" // Ideally fetch from site settings
+                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+                                >
+                                    <Phone className="w-4 h-4" />
+                                    Call to Check
+                                </a>
+                                <Link
+                                    href="/content/contact"
+                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-dark text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+                                >
+                                    <MapPin className="w-4 h-4" />
+                                    Visit Store
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Store Info Snippet */}
+                        <div className="flex items-start gap-4 p-4 border border-slate-100 rounded-xl">
+                            <div className="p-3 bg-brand-blue/10 rounded-lg text-brand-blue">
+                                <ShieldCheck className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-900">Authenticity Guaranteed</h4>
+                                <p className="text-sm text-slate-600 mt-1">
+                                    Directly from authorized distributors with full manufacturer warranty.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Detailed Information Tabs/Sections */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <div className="lg:col-span-8 space-y-12">
+                        {/* Description */}
+                        <section>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                                Product Description
+                                <div className="h-px flex-1 bg-slate-100"></div>
+                            </h2>
+                            <div className="prose prose-lg prose-slate text-slate-600 max-w-none">
+                                <p>{product.description}</p>
+                            </div>
+                        </section>
+
+                        {/* Specifications */}
+                        {product.specifications && product.specifications.length > 0 && (
+                            <section>
+                                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                                    Technical Specifications
+                                    <div className="h-px flex-1 bg-slate-100"></div>
+                                </h2>
+                                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                                    <table className="w-full text-left">
+                                        <tbody>
+                                            {product.specifications.map((spec, index) => (
+                                                <tr
+                                                    key={index}
+                                                    className={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
+                                                >
+                                                    <th className="py-4 px-6 font-medium text-slate-900 w-1/3 border-b border-slate-100 last:border-0">
+                                                        {spec.key}
+                                                    </th>
+                                                    <td className="py-4 px-6 text-slate-600 border-b border-slate-100 last:border-0">
+                                                        {spec.value}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Reviews */}
+                        <section>
+                            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                                Customer Reviews
+                                <div className="h-px flex-1 bg-slate-100"></div>
+                            </h2>
+                            <Reviews
+                                productId={product.id}
+                                reviews={reviews}
+                                averageRating={product.averageRating}
+                                reviewCount={product.reviewCount}
+                            />
+                        </section>
+                    </div>
+
+                    {/* Sidebar / Recommendations could go here */}
+                    <div className="hidden lg:block lg:col-span-4 space-y-8">
+                        {/* Store Location Map Mini */}
+                        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                <MapPin className="w-5 h-5 text-brand-dark" />
+                                Store Location
+                            </h3>
+                            <div className="aspect-video bg-slate-200 rounded-xl mb-4 overflow-hidden relative">
+                                {/* Placeholder for map image or embed */}
+                                <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-sm">
+                                    Map View
+                                </div>
+                            </div>
+                            <div className="space-y-3 text-sm text-slate-600">
+                                <div className="flex items-start gap-3">
+                                    <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
+                                    <p>Patliputra colony<br />P&M Mall, Patna</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <Clock className="w-4 h-4 mt-0.5 shrink-0" />
+                                    <p>Open Daily<br />10:00 AM - 9:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
